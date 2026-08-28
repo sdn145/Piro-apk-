@@ -1,1 +1,11 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "dev.pages.piro_apk.twa",
+    "sha256_cert_fingerprints": [
+      "DI-ISI_DIGITAL_ASSET_LINKS_DARI_PWABUILDER"
+    ]
+  }
+}]
 
