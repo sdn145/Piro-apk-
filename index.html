@@ -1,0 +1,3626 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Pirostore Official</title>
+  
+  <link rel="manifest" href="manifest.json" />
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    :root {
+      --bg-main: #06070c;
+      --app-bg: radial-gradient(circle at top right, #250b38 0%, #0d0e17 40%, #05060a 100%);
+      --card-bg: rgba(18, 20, 32, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --primary: #ff0055;
+      --primary-glow: rgba(255, 0, 85, 0.45);
+      --secondary: #00e5ff;
+      --secondary-glow: rgba(0, 229, 255, 0.45);
+      --gold: #ffd700;
+      --gold-glow: rgba(255, 215, 0, 0.4);
+      --text-white: #ffffff;
+      --text-dim: #9aa0b8;
+      --success: #00f5a0;
+      --danger: #ff2a5f;
+      --input-bg: rgba(13, 15, 24, 0.9);
+      --nav-bg: rgba(10, 11, 18, 0.94);
+      --header-bg: rgba(8, 9, 15, 0.88);
+      --item-hover: rgba(255, 255, 255, 0.05);
+      --discord-blue: #5865F2;
+    }
+
+    body.light-theme {
+      --bg-main: #e8ecf2;
+      --app-bg: linear-gradient(180deg, #f8faff 0%, #eef2f8 100%);
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --card-border: rgba(0, 0, 0, 0.08);
+      --text-white: #111424;
+      --text-dim: #64748b;
+      --input-bg: #f1f5f9;
+      --nav-bg: rgba(255, 255, 255, 0.95);
+      --header-bg: rgba(255, 255, 255, 0.9);
+      --item-hover: rgba(0, 0, 0, 0.03);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-white);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .app-viewport {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      background: var(--app-bg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 0 60px rgba(0,0,0,0.8);
+      border-left: 1px solid var(--card-border);
+      border-right: 1px solid var(--card-border);
+    }
+
+    .glass-box {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+    }
+
+    #auth-screen {
+      padding: 40px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      z-index: 20;
+    }
+
+    .brand-logo-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .brand-logo {
+      width: 110px;
+      height: 110px;
+      border-radius: 28px;
+      border: 2px solid var(--secondary);
+      box-shadow: 0 0 30px var(--secondary-glow);
+      object-fit: cover;
+    }
+
+    .brand-title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, var(--text-white) 20%, #00e5ff 60%, #ff0055 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+    }
+
+    .brand-tagline {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      margin-bottom: 25px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .auth-tab-switch {
+      display: flex;
+      width: 100%;
+      background: rgba(10, 11, 16, 0.3);
+      border-radius: 14px;
+      padding: 4px;
+      margin-bottom: 20px;
+      border: 1px solid var(--card-border);
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      color: var(--text-dim);
+      transition: 0.3s;
+    }
+
+    .auth-tab-btn.active {
+      background: linear-gradient(135deg, var(--primary), #b3003b);
+      color: #fff;
+      box-shadow: 0 4px 15px var(--primary-glow);
+    }
+
+    .input-field {
+      width: 100%;
+      margin-bottom: 14px;
+    }
+
+    .input-field label {
+      display: block;
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .input-field input, .input-field select, .input-field textarea {
+      width: 100%;
+      padding: 13px 16px;
+      border-radius: 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-white);
+      font-size: 13px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    .input-field input:focus, .input-field select:focus, .input-field textarea:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 15px var(--secondary-glow);
+    }
+
+    .input-field input:disabled, .input-field textarea:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      border-color: rgba(255,255,255,0.05);
+    }
+
+    .btn-lux-primary {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #00e5ff, #0077b6);
+      color: #05060a;
+      font-weight: 800;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 6px 20px var(--secondary-glow);
+      transition: 0.3s;
+    }
+
+    .btn-google-real {
+      width: 100%;
+      padding: 13px;
+      background: #ffffff;
+      color: #3c4043;
+      font-weight: 700;
+      font-size: 14px;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    #main-app {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+      padding-bottom: 95px;
+    }
+
+    .top-lux-header {
+      padding: 14px 18px;
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(15px);
+    }
+
+    .brand-header-mini {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 900;
+      font-size: 15px;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, #fff, var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .role-badge-pill {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .role-newbie { background: rgba(120, 130, 150, 0.25); color: var(--text-white); }
+    .role-vip { background: linear-gradient(90deg, #ffd700, #ff8c00); color: #000; }
+    .role-owner { background: linear-gradient(90deg, #ff0055, #990033); color: #fff; box-shadow: 0 0 10px var(--primary-glow); }
+    .role-ceo { background: linear-gradient(90deg, #00e5ff, #0077b6); color: #000; }
+    .role-reseller { background: linear-gradient(90deg, #00f5a0, #009966); color: #000; }
+    .role-partner { background: linear-gradient(90deg, #a855f7, #6b21a8); color: #fff; }
+    .role-premium { background: linear-gradient(90deg, #ec4899, #be185d); color: #fff; }
+
+    .header-btn-vip-info {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 140, 0, 0.25));
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 12px var(--gold-glow);
+    }
+
+    .bottom-navbar {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      height: 72px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 50;
+      padding: 0 4px;
+      overflow-x: auto;
+    }
+
+    .nav-tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      font-size: 9px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      gap: 3px;
+      min-width: 55px;
+      flex: 1;
+    }
+
+    .nav-tab-item i { font-size: 15px; }
+    .nav-tab-item.active { color: var(--secondary); }
+    .nav-tab-item.admin-nav.active { color: var(--primary); }
+
+    .page-view {
+      display: none;
+      padding: 20px;
+      animation: fadeIn 0.35s ease;
+    }
+    .page-view.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(255, 0, 85, 0.25) 0%, rgba(0, 229, 255, 0.25) 100%), var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 24px;
+    }
+
+    .section-headline {
+      font-size: 16px;
+      font-weight: 800;
+      margin: 18px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lux-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .lux-card-img-wrapper {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .lux-card-img {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+    }
+
+    .lux-card-content { padding: 16px; }
+
+    .lux-badge-time {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(0, 245, 160, 0.12);
+      color: var(--success);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .lux-order-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), #e6004c);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .vip-benefit-showcase {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(0, 229, 255, 0.08));
+      border: 1.5px solid var(--gold);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 20px var(--gold-glow);
+    }
+
+    .vip-benefit-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .vip-benefit-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--text-white);
+    }
+
+    .vip-benefit-list li i { color: var(--gold); font-size: 14px; margin-top: 2px; }
+
+    .vip-card-plan {
+      background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,0,85,0.05));
+      border: 1px solid rgba(255,215,0,0.3);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .vip-card-plan.highlight {
+      border: 2px solid var(--gold);
+      box-shadow: 0 0 20px var(--gold-glow);
+    }
+
+    .discord-profile-card {
+      border-radius: 24px;
+      overflow: hidden;
+      background: #111214;
+      border: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 20px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.6);
+    }
+
+    .discord-profile-banner-wrapper {
+      height: 125px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0052d4, #4364f7, #6fb1fc);
+    }
+
+    .discord-profile-body {
+      padding: 0 20px 20px;
+      position: relative;
+      margin-top: -45px;
+    }
+
+    .discord-avatar-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 12px;
+    }
+
+    .discord-avatar-container {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: #111214;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+
+    .avatar-crop-box {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+      background: #222;
+    }
+
+    .discord-avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1);
+      transition: transform 0.1s ease;
+    }
+
+    .discord-shape-frame {
+      position: absolute;
+      top: -6px;
+      left: -6px;
+      right: -6px;
+      bottom: -6px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .discord-status-bubble {
+      background: #232428;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #dbdee1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 250px;
+    }
+
+    .discord-user-info-row { margin-top: 10px; }
+
+    .discord-name-title {
+      font-size: 20px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #fff;
+    }
+
+    .discord-sub-name {
+      font-size: 12px;
+      color: #949ba4;
+      margin: 4px 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .discord-badges-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .discord-badge-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    .btn-discord-edit {
+      width: 100%;
+      padding: 12px;
+      background: var(--discord-blue);
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);
+    }
+
+    .discord-tab-bar {
+      display: flex;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-top: 16px;
+    }
+
+    .discord-tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #949ba4;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .discord-tab-btn.active { color: #fff; }
+
+    .discord-tab-btn.active::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 20%;
+      width: 60%;
+      height: 3px;
+      background: var(--discord-blue);
+      border-radius: 3px;
+    }
+
+    .shop-catalog-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .shop-border-card {
+      background: #18191c;
+      border-radius: 16px;
+      padding: 14px 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .shop-border-avatar-preview {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      margin: 10px 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #2b2d31;
+      position: relative;
+    }
+
+    .shop-buy-btn {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--gold), #ff8c00);
+      color: #000;
+      font-weight: 800;
+      font-size: 11px;
+      border: none;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .shop-owned-btn {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(0, 245, 160, 0.15);
+      border: 1px solid var(--success);
+      color: var(--success);
+      font-weight: 800;
+      font-size: 11px;
+      cursor: default;
+      margin-top: 8px;
+    }
+
+    .status-badge-order {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      display: inline-block;
+    }
+    .status-menunggu { background: rgba(255, 215, 0, 0.15); color: var(--gold); border: 1px solid rgba(255, 215, 0, 0.4); }
+    .status-proses { background: rgba(0, 229, 255, 0.15); color: var(--secondary); border: 1px solid rgba(0, 229, 255, 0.4); }
+    .status-selesai { background: rgba(0, 245, 160, 0.15); color: var(--success); border: 1px solid rgba(0, 245, 160, 0.4); }
+    .status-ditolak { background: rgba(255, 42, 95, 0.15); color: var(--danger); border: 1px solid rgba(255, 42, 95, 0.4); }
+
+    .setting-group-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 18px 0 8px;
+    }
+
+    .setting-list {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid var(--card-border);
+      overflow: hidden;
+    }
+
+    .setting-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 16px;
+      gap: 14px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--card-border);
+      text-decoration: none;
+      color: var(--text-white);
+      transition: background 0.2s;
+    }
+
+    .setting-item:last-child { border-bottom: none; }
+    .setting-item:active { background: var(--item-hover); }
+
+    .setting-icon { font-size: 19px; color: var(--text-dim); width: 26px; text-align: center; }
+    .setting-texts { flex: 1; }
+    .setting-title { font-size: 14px; font-weight: 600; line-height: 1.3; }
+    .setting-subtitle { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(120, 130, 150, 0.4);
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider { background-color: var(--secondary); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    .subpage-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .btn-back {
+      background: none;
+      border: none;
+      color: var(--text-white);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    .border-grid-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding: 10px 4px;
+      margin-top: 8px;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      background: rgba(0,0,0,0.25);
+    }
+
+    .border-item-choice {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 4px;
+      border-radius: 10px;
+      background: var(--input-bg);
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: 0.2s;
+    }
+
+    .border-item-choice.selected {
+      border-color: var(--secondary) !important;
+      box-shadow: 0 0 10px var(--secondary-glow);
+    }
+
+    .border-preview-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      color: #fff;
+      position: relative;
+    }
+
+    .admin-gate-card {
+      position: relative;
+      background: linear-gradient(145deg, rgba(28, 14, 45, 0.85), rgba(12, 14, 25, 0.95));
+      border: 2px solid transparent;
+      border-image: linear-gradient(135deg, var(--primary), var(--secondary)) 1;
+      border-radius: 24px;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 0 35px rgba(255, 0, 85, 0.25), inset 0 0 20px rgba(0, 229, 255, 0.1);
+    }
+
+    .gate-laser-shield {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 16px;
+      background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px dashed var(--primary);
+      animation: rotateGlow 8s linear infinite;
+    }
+
+    @keyframes rotateGlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .admin-gate-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px;
+      letter-spacing: 1.5px;
+      background: linear-gradient(90deg, #fff, #00e5ff, #ff0055);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .key-input-wrapper {
+      position: relative;
+      width: 100%;
+      margin: 18px 0;
+    }
+
+    .key-input-lux {
+      width: 100%;
+      padding: 14px 46px 14px 18px;
+      background: rgba(8, 10, 16, 0.95);
+      border: 1.5px solid rgba(0, 229, 255, 0.3);
+      border-radius: 14px;
+      color: #00e5ff;
+      font-family: 'Orbitron', monospace;
+      font-size: 14px;
+      letter-spacing: 2px;
+      text-align: center;
+      outline: none;
+      box-shadow: inset 0 0 10px rgba(0, 229, 255, 0.15);
+    }
+
+    .btn-toggle-eye {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .btn-key-unlock {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, var(--primary), #88002a);
+      color: #fff;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 1.5px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 8px 25px var(--primary-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .admin-card-stat {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat-box-cyber {
+      background: linear-gradient(145deg, rgba(20, 24, 42, 0.9), rgba(10, 12, 22, 0.98));
+      border: 1px solid rgba(0, 229, 255, 0.25);
+      border-radius: 18px;
+      padding: 16px 14px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5), inset 0 0 15px rgba(0,229,255,0.05);
+    }
+
+    .stat-box-cyber::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--secondary), var(--primary));
+      box-shadow: 0 0 12px var(--secondary);
+    }
+
+    .stat-val-cyber {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      margin-top: 6px;
+      letter-spacing: 1px;
+    }
+
+    .admin-btn-action {
+      width: 100%;
+      padding: 16px 18px;
+      background: linear-gradient(135deg, rgba(255, 29, 50, 0.8), rgba(14, 16, 28, 0.95));
+      border: 1px solid rgba(0, 229, 255, 0.18);
+      border-radius: 16px;
+      color: var(--text-white);
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      margin-bottom: 12px;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    .admin-btn-action:hover {
+      border-color: var(--secondary);
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.3);
+    }
+
+    .badge-btn-action {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(0, 229, 255, 0.12);
+      color: var(--secondary);
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      box-shadow: 0 0 8px rgba(0,229,255,0.2);
+    }
+
+    .admin-section-content {
+      display: none;
+      background: linear-gradient(180deg, rgba(12, 14, 25, 0.95), rgba(7, 8, 16, 0.98));
+      border: 1.5px solid rgba(0, 229, 255, 0.25);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 14px;
+      animation: fadeIn 0.25s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    .user-monitor-card {
+      background: rgba(22, 26, 44, 0.85);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .user-avatar-top-wrap {
+      position: relative !important;
+      width: 44px !important;
+      height: 44px !important;
+      min-width: 44px !important;
+      min-height: 44px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin-right: 12px !important;
+      overflow: visible !important;
+    }
+
+    .user-avatar-top-wrap .user-monitor-avatar {
+      width: 38px !important;
+      height: 38px !important;
+      border-radius: 50% !important;
+      object-fit: cover !important;
+      position: relative !important;
+      z-index: 2 !important;
+    }
+
+    .user-avatar-top-wrap .discord-shape-frame {
+      position: absolute !important;
+      top: 0px !important;
+      left: 0px !important;
+      right: 0px !important;
+      bottom: 0px !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 3 !important;
+    }
+
+    .btn-user-reset-trash {
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: rgba(255, 42, 95, 0.15);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      font-size: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: 0.2s;
+    }
+
+    .btn-user-reset-trash:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .lux-modal-dialog {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(2, 3, 6, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .lux-modal-box {
+      width: 100%;
+      max-width: 360px;
+      background: #11131f;
+      border-radius: 22px;
+      padding: 26px 20px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 0 40px rgba(0,0,0,0.9);
+      animation: modalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .lux-modal-icon-wrap {
+      width: 65px;
+      height: 65px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .vip-info-card-container {
+      width: 100%;
+      max-width: 380px;
+      background: #ffffff;
+      color: #1a1a1a;
+      border-radius: 20px;
+      padding: 22px 20px;
+      border: 3px solid #111;
+      text-align: left;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .vip-info-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+
+    .vip-info-card-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: #0f172a;
+    }
+
+    .vip-info-badge-status {
+      text-align: right;
+      font-size: 10px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.3;
+    }
+
+    .vip-info-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 16px;
+    }
+
+    .vip-info-footer {
+      border-top: 1px dashed #cbd5e1;
+      padding-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .vip-manage-btn {
+      color: #00c988;
+      font-weight: 800;
+      font-size: 12px;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      background: none;
+      letter-spacing: 0.5px;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(4, 5, 8, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border-top: 2px solid var(--secondary);
+      border-radius: 26px 26px 0 0;
+      padding: 24px 20px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: sheetUp 0.3s ease;
+    }
+
+    @keyframes sheetUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .qris-frame {
+      background: #fff;
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    .qris-frame img {
+      max-width: 100%;
+      height: 230px;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-viewport">
+
+  <!-- SCREEN LOGIN / REGISTER -->
+  <div id="auth-screen">
+    <div class="brand-logo-container">
+      <img src="https://cdn.phototourl.com/member/2026-08-27-5b41a41c-b768-49cc-931b-92a2f9b3bc9b.jpg" alt="Logo Pirostore" class="brand-logo" id="mainAppLogoAuth" />
+    </div>
+    <h1 class="brand-title" id="appBrandTitleAuth">PIROSTORE</h1>
+    <p class="brand-tagline" id="appBrandTaglineAuth">Official Digital Services</p>
+
+    <div class="auth-tab-switch">
+      <div class="auth-tab-btn active" onclick="setAuthMode('login')">Masuk</div>
+      <div class="auth-tab-btn" onclick="setAuthMode('register')">Daftar Akun</div>
+    </div>
+
+    <button type="button" class="btn-google-real" onclick="connectGoogleAccount()">
+      <svg width="20" height="20" viewBox="0 0 48 48">
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+      </svg>
+      Masuk dengan Google
+    </button>
+
+    <form id="auth-form-login" onsubmit="processLogin(event)" style="width: 100%;">
+      <div class="input-field">
+        <label>Email atau Nomor WhatsApp</label>
+        <input type="text" id="log-account" placeholder="contoh@gmail.com / 0831xxxx" required />
+      </div>
+      <div class="input-field">
+        <label>Kata Sandi</label>
+        <input type="password" id="log-password" required placeholder="••••••••" />
+      </div>
+      <button type="submit" class="btn-lux-primary"><i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk ke Pirostore</button>
+    </form>
+
+    <form id="auth-form-reg" onsubmit="processRegister(event)" style="width: 100%; display: none;">
+      <div class="input-field">
+        <label>Nama Lengkap / Nickname</label>
+        <input type="text" id="reg-name" placeholder="Nama Anda" required />
+      </div>
+      <div class="input-field">
+        <label>Email</label>
+        <input type="email" id="reg-account" placeholder="nama@gmail.com" required />
+      </div>
+      <div class="input-field">
+        <label>Nomor WhatsApp</label>
+        <input type="tel" id="reg-phone" placeholder="08xxxxxxxxxx" required />
+      </div>
+      <div class="input-field">
+        <label>Kata Sandi</label>
+        <input type="password" id="reg-password" required placeholder="••••••••" />
+      </div>
+      <button type="submit" class="btn-lux-primary" style="background: linear-gradient(135deg, var(--primary), #b3003b); color: #fff;">
+        <i class="fa-solid fa-user-plus"></i> Daftar Akun Baru
+      </button>
+    </form>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="main-app">
+
+    <div class="top-lux-header">
+      <div class="brand-header-mini">
+        <i class="fa-solid fa-bolt" style="color:var(--secondary); font-size:16px;"></i>
+        <span>PIROSTORE</span>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="topBtnVipInfo" class="header-btn-vip-info" onclick="showVipInfoModal()">
+          <i class="fa-solid fa-crown"></i> Info Langganan
+        </button>
+        <div id="maintenanceAlertBadge" style="display:none; font-size: 10px; background: red; color:#fff; padding: 2px 6px; border-radius: 4px; font-weight:800;">MAINTENANCE</div>
+      </div>
+    </div>
+
+    <!-- HALAMAN 1: BERANDA -->
+    <div id="page-home" class="page-view active">
+      <div class="hero-banner">
+        <span class="role-badge-pill role-vip" style="margin-bottom: 8px;" id="heroBadgePromo">PROMO SPESIAL</span>
+        <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 4px;" id="heroTitlePromo">Pirostore Official ✨</h2>
+        <p style="font-size: 12px; color: var(--text-dim); line-height: 1.4;" id="heroDescPromo">Layanan Akun Premium, Suntik Like TikTok, & Diamond MLBB termurah & aman terpercaya!</p>
+      </div>
+
+      <div class="section-headline"><i class="fa-solid fa-fire" style="color: var(--primary);"></i> Katalog Produk Pirostore</div>
+      <div id="productsContainer"></div>
+    </div>
+
+    <!-- HALAMAN 2: DAFTAR HARGA LENGKAP -->
+    <div id="page-services" class="page-view">
+      <div class="section-headline"><i class="fa-solid fa-tags" style="color: var(--secondary);"></i> Daftar Harga Lengkap</div>
+      <div id="priceListContainer"></div>
+    </div>
+
+    <!-- HALAMAN 3: MEMBERSHIP VIP -->
+    <div id="page-vip" class="page-view">
+      <div class="section-headline"><i class="fa-solid fa-crown" style="color: var(--gold);"></i> Membership VIP & Free</div>
+      <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 15px;">Tingkatkan status akun ke VIP untuk mendapatkan prioritas jalur kilat & diskon spesial!</p>
+
+      <div class="vip-benefit-showcase">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <h4 style="font-size: 14px; font-weight: 800; color: var(--gold);">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Manfaat Eksklusif Fitur VIP
+          </h4>
+          <span class="role-badge-pill role-vip">PROMO SPESIAL</span>
+        </div>
+        <ul class="vip-benefit-list">
+          <li><i class="fa-solid fa-circle-check"></i> <span><b>Diskon 50%</b> untuk semua transaksi produk pilihan</span></li>
+          <li><i class="fa-solid fa-circle-check"></i> <span><b>Bonus 500+ Poin</b> untuk pembelian APK premium & top up</span></li>
+          <li><i class="fa-solid fa-circle-check"></i> <span><b>Border Avatar Bentuk Discord (80 Varian)</b> tampilan berornamen mewah</span></li>
+          <li><i class="fa-solid fa-circle-check"></i> <span><b>Jalur Cepat & Bebas PC Admin</b> order langsung diproses kilat</span></li>
+          <li><i class="fa-solid fa-circle-check"></i> <span><b>Garansi Penuh</b> penggantian langsung jika ada kendala sistem</span></li>
+          <li><i class="fa-solid fa-circle-check"></i> <span><b>Kustomisasi Profil</b> ubah foto profil dan nickname sepuasnya</span></li>
+        </ul>
+      </div>
+
+      <div class="glass-box" style="padding: 16px; margin-bottom: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <h4 style="font-size: 14px; font-weight: 800;">Member Standar (Newbie)</h4>
+          <span class="role-badge-pill role-newbie">GRATIS</span>
+        </div>
+        <p style="font-size: 11px; color: var(--text-dim);">• Akses semua layanan standar<br>• Antrean proses reguler</p>
+      </div>
+
+      <div class="vip-card-plan">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <h4 style="font-size: 14px; font-weight: 800; color: var(--gold);"><i class="fa-solid fa-gem"></i> VIP Mingguan</h4>
+          <b style="color: var(--text-white); font-size: 15px;" id="vipPriceWeekly">Rp 5.000</b>
+        </div>
+        <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">Masa aktif 7 Hari. Jalur antrean lebih cepat + Badge VIP.</p>
+        <button class="lux-order-btn" style="background: linear-gradient(135deg, #ffd700, #ff8c00); color: #000;" onclick="orderVipPlan('VIP Mingguan (7 Hari)', document.getElementById('vipPriceWeekly').innerText)">
+          <i class="fa-solid fa-crown"></i> Beli VIP Mingguan
+        </button>
+      </div>
+
+      <div class="vip-card-plan">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <h4 style="font-size: 14px; font-weight: 800; color: var(--gold);"><i class="fa-solid fa-medal"></i> VIP Bulanan</h4>
+          <b style="color: var(--text-white); font-size: 15px;" id="vipPriceMonthly">Rp 10.000</b>
+        </div>
+        <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">Masa aktif 30 Hari. Prioritas pemrosesan pesanan.</p>
+        <button class="lux-order-btn" style="background: linear-gradient(135deg, #ffd700, #ff8c00); color: #000;" onclick="orderVipPlan('VIP Bulanan (30 Hari)', document.getElementById('vipPriceMonthly').innerText)">
+          <i class="fa-solid fa-crown"></i> Beli VIP Bulanan
+        </button>
+      </div>
+
+      <div class="vip-card-plan">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <h4 style="font-size: 14px; font-weight: 800; color: var(--gold);"><i class="fa-solid fa-calendar-days"></i> VIP Tahunan</h4>
+          <b style="color: var(--text-white); font-size: 15px;" id="vipPriceYearly">Rp 15.000</b>
+        </div>
+        <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">Masa aktif 365 Hari (1 Tahun). Hemat maksimal & prioritas utama.</p>
+        <button class="lux-order-btn" style="background: linear-gradient(135deg, #ffd700, #ff8c00); color: #000;" onclick="orderVipPlan('VIP Tahunan (365 Hari)', document.getElementById('vipPriceYearly').innerText)">
+          <i class="fa-solid fa-crown"></i> Beli VIP Tahunan
+        </button>
+      </div>
+
+      <div class="vip-card-plan highlight">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <h4 style="font-size: 15px; font-weight: 800; color: var(--gold);"><i class="fa-solid fa-shield-halved"></i> VIP Selamanya (Lifetime)</h4>
+          <b style="color: var(--gold); font-size: 16px;" id="vipPriceLifetime">Rp 35.000</b>
+        </div>
+        <p style="font-size: 11px; color: var(--text-white); margin-bottom: 10px;">Akses VIP Permanen Seumur Hidup Tanpa Batas Waktu + Prioritas Tertinggi!</p>
+        <button class="lux-order-btn" style="background: linear-gradient(135deg, var(--gold), #ff0055); color: #fff;" onclick="orderVipPlan('VIP Selamanya (Lifetime)', document.getElementById('vipPriceLifetime').innerText)">
+          <i class="fa-solid fa-bolt"></i> Beli VIP Selamanya
+        </button>
+      </div>
+    </div>
+
+    <!-- HALAMAN 4: CARI PROFIL & CEK USER LAIN -->
+    <div id="page-tracking" class="page-view">
+      <div class="section-headline"><i class="fa-solid fa-magnifying-glass" style="color: var(--secondary);"></i> Cari Profil & Cek User</div>
+      <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 15px;">Ketik nama lengkap, nickname, atau email pengguna lain untuk melihat detail profil mereka.</p>
+
+      <div class="glass-box" style="padding: 18px; margin-bottom: 15px;">
+        <div class="input-field">
+          <label>Cari Nickname / Username / Email User</label>
+          <input type="text" id="userSearchInput" placeholder="Contoh: ZUXCYN / user@gmail.com" />
+        </div>
+        <button class="btn-lux-primary" onclick="searchUserProfile()"><i class="fa-solid fa-magnifying-glass"></i> Cek Profil Pengguna</button>
+      </div>
+
+      <div id="userSearchResultCard" style="display: none;">
+        <div class="discord-profile-card">
+          <div class="discord-profile-banner-wrapper"></div>
+
+          <div class="discord-profile-body">
+            <div class="discord-avatar-row">
+              <div class="discord-avatar-container">
+                <div class="avatar-crop-box">
+                  <img id="searchResultAvatar" class="discord-avatar-img" src="" />
+                </div>
+                <div id="searchResultShapeFrame" class="discord-shape-frame"></div>
+              </div>
+              
+              <div class="discord-status-bubble">
+                <i class="fa-solid fa-comment-dots" style="color: #5865F2; font-size:14px;"></i>
+                <span style="font-size:11px; font-style:italic;" id="searchResultStatus">Pick a mythical creature as a pet</span>
+              </div>
+            </div>
+
+            <div class="discord-user-info-row">
+              <div class="discord-name-title">
+                <span id="searchResultName">Nickname</span>
+                <i class="fa-solid fa-circle-check" style="font-size:14px; color:var(--secondary);"></i>
+              </div>
+              <div class="discord-sub-name">
+                <span id="searchResultEmail">email@gmail.com</span>
+              </div>
+
+              <div class="discord-badges-row" id="searchResultRolesList" style="margin-bottom: 6px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HALAMAN 5: RIWAYAT PEMBELIAN -->
+    <div id="page-history" class="page-view">
+      <div class="section-headline"><i class="fa-solid fa-clock-rotate-left" style="color: var(--gold);"></i> Riwayat Pembelian Anda</div>
+      <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 12px;">Status pesanan diperbarui secara langsung oleh sistem dan developer.</p>
+      <div id="userHistoryContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
+    </div>
+
+    <!-- HALAMAN 6: KOMUNITAS & KONTAK -->
+    <div id="page-community" class="page-view">
+      <div class="section-headline"><i class="fa-solid fa-users" style="color: var(--secondary);"></i> Kontak Developer & Komunitas</div>
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+        <a id="linkWAAdmin" href="https://wa.me/6283161621493" target="_blank" class="glass-box" style="padding: 16px; display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--text-white);">
+          <i class="fa-brands fa-whatsapp" style="font-size: 26px; color: #25d366;"></i>
+          <div>
+            <div style="font-size: 14px; font-weight: 700;">WhatsApp Developer</div>
+            <div style="font-size: 11px; color: var(--text-dim);" id="labelWAAdmin">pirowangyy (+62 831-6162-1493)</div>
+          </div>
+        </a>
+
+        <a id="linkTikTok" href="https://www.tiktok.com/@pirowangyy?_r=1&_t=ZS-99E9CuGPsAP" target="_blank" class="glass-box" style="padding: 16px; display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--text-white);">
+          <i class="fa-brands fa-tiktok" style="font-size: 26px; color: var(--text-white);"></i>
+          <div>
+            <div style="font-size: 14px; font-weight: 700;">TikTok Resmi</div>
+            <div style="font-size: 11px; color: var(--text-dim);" id="labelTikTok">@pirowangyy</div>
+          </div>
+        </a>
+
+        <a id="linkWAChannel" href="https://whatsapp.com/channel/0029VbD1wybDeON0AipcIZ3R" target="_blank" class="glass-box" style="padding: 16px; display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--text-white);">
+          <i class="fa-solid fa-bullhorn" style="font-size: 24px; color: var(--secondary);"></i>
+          <div>
+            <div style="font-size: 14px; font-weight: 700;">Saluran WhatsApp Piro</div>
+            <div style="font-size: 11px; color: var(--text-dim);">Info diskon & update promo harian</div>
+          </div>
+        </a>
+
+        <a id="linkWAGroup" href="https://chat.whatsapp.com/L1LQgQhsjUA3eQwFVzCgup?s=cl&p=a&mlu=4" target="_blank" class="glass-box" style="padding: 16px; display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--text-white);">
+          <i class="fa-solid fa-user-group" style="font-size: 22px; color: var(--gold);"></i>
+          <div>
+            <div style="font-size: 14px; font-weight: 700;">Grup WhatsApp Official</div>
+            <div style="font-size: 11px; color: var(--text-dim);">Komunitas pelanggan Pirostore</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- HALAMAN 7: PROFIL & PENGATURAN -->
+    <div id="page-profile" class="page-view">
+      
+      <div class="discord-profile-card">
+        <div class="discord-profile-banner-wrapper"></div>
+
+        <div class="discord-profile-body">
+          <div class="discord-avatar-row">
+            <div class="discord-avatar-container" id="profileAvatarWrapper">
+              <div class="avatar-crop-box">
+                <img id="profile-avatar-big" class="discord-avatar-img" src="" />
+              </div>
+              <div id="profileAvatarShapeFrame" class="discord-shape-frame"></div>
+            </div>
+            
+            <div class="discord-status-bubble">
+              <i class="fa-solid fa-circle-plus" style="color: #5865F2; font-size:14px;"></i>
+              <span style="font-size:11px; font-style:italic;" id="profileCustomStatus">Pick a mythical creature as a pet</span>
+            </div>
+          </div>
+
+          <div class="discord-user-info-row">
+            <div class="discord-name-title">
+              <span id="profile-name-big">ZUXCYN</span>
+              <i class="fa-solid fa-angle-down" style="font-size:14px; color:#949ba4;"></i>
+            </div>
+            <div class="discord-sub-name">
+              <span id="profile-email-big">pyni6789 • Aqilah/Kucing Putih🤍</span>
+            </div>
+
+            <div class="discord-badges-row" id="profileBadgesList">
+              <div class="discord-badge-icon" style="background:rgba(88, 101, 242, 0.2); color:#5865F2;"><i class="fa-solid fa-award"></i></div>
+              <div class="discord-badge-icon" style="background:rgba(255, 215, 0, 0.2); color:#ffd700;"><i class="fa-solid fa-sparkles"></i></div>
+              <div id="profileMultiRolePills" style="display:flex; gap:4px; flex-wrap:wrap;"></div>
+            </div>
+
+            <button class="btn-discord-edit" onclick="openEditProfilePage()">
+              <i class="fa-solid fa-pen"></i> Edit Profile
+            </button>
+          </div>
+
+          <div class="discord-tab-bar">
+            <div class="discord-tab-btn active">Main</div>
+            <div class="discord-tab-btn" onclick="openSubPage('subpage-border-shop')">Shop Border</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-list" style="margin-bottom: 20px;">
+        <div class="setting-item" onclick="openSubPage('subpage-border-shop')" style="background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(0,229,255,0.05));">
+          <i class="fa-solid fa-store setting-icon" style="color: var(--gold);"></i>
+          <div class="setting-texts">
+            <div class="setting-title" style="color:var(--gold);">Shop Border Avatar (Newbie)</div>
+            <div class="setting-subtitle">Shop</div>
+          </div>
+          <span class="role-badge-pill role-vip">SHOP</span>
+        </div>
+      </div>
+
+      <div class="setting-group-title">Pengaturan Akun & Status</div>
+      <div class="setting-list">
+        <div class="setting-item" onclick="openSubPage('subpage-role-check')">
+          <i class="fa-solid fa-id-badge setting-icon" style="color: var(--gold);"></i>
+          <div class="setting-texts">
+            <div class="setting-title">Cek Status Role Akun</div>
+            <div class="setting-subtitle" id="roleStatusSubText">Role aktif: NEWBIE</div>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="color:var(--text-dim); font-size:12px;"></i>
+        </div>
+      </div>
+
+      <div class="setting-group-title">Preferensi Aplikasi</div>
+      <div class="setting-list">
+        <div class="setting-item">
+          <i class="fa-solid fa-moon setting-icon" id="theme-icon"></i>
+          <div class="setting-texts">
+            <div class="setting-title">Mode Gelap / Terang</div>
+            <div class="setting-subtitle" id="theme-status-text">Saat ini aktif: Mode Gelap</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="themeToggle" onchange="toggleAppTheme()">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="setting-group-title">Bantuan dan Masukan</div>
+      <div class="setting-list">
+        <div class="setting-item" onclick="openSubPage('subpage-help-center')">
+          <i class="fa-regular fa-circle-question setting-icon"></i>
+          <div class="setting-texts"><div class="setting-title">Pusat Bantuan</div><div class="setting-subtitle">Dapatkan bantuan, hubungi kami</div></div>
+          <i class="fa-solid fa-chevron-right" style="color:var(--text-dim); font-size:12px;"></i>
+        </div>
+        <div class="setting-item" onclick="openSubPage('subpage-feedback')">
+          <i class="fa-solid fa-bug setting-icon"></i>
+          <div class="setting-texts"><div class="setting-title">Kirim masukan</div><div class="setting-subtitle">Laporkan masalah teknis</div></div>
+          <i class="fa-solid fa-chevron-right" style="color:var(--text-dim); font-size:12px;"></i>
+        </div>
+        <div class="setting-item" onclick="openSubPage('subpage-terms')">
+          <i class="fa-regular fa-file-lines setting-icon"></i>
+          <div class="setting-texts"><div class="setting-title">Ketentuan dan Kebijakan Privasi</div><div class="setting-subtitle">Syarat layanan & keamanan data</div></div>
+          <i class="fa-solid fa-chevron-right" style="color:var(--text-dim); font-size:12px;"></i>
+        </div>
+        <div class="setting-item" onclick="openSubPage('subpage-report')">
+          <i class="fa-regular fa-message setting-icon"></i>
+          <div class="setting-texts"><div class="setting-title">Laporan saluran</div><div class="setting-subtitle">Laporkan gangguan saluran & server</div></div>
+          <i class="fa-solid fa-chevron-right" style="color:var(--text-dim); font-size:12px;"></i>
+        </div>
+        <div class="setting-item" onclick="openSubPage('subpage-app-info')">
+          <i class="fa-solid fa-circle-info setting-icon"></i>
+          <div class="setting-texts"><div class="setting-title">Info aplikasi</div><div class="setting-subtitle">Versi 1.12.0 (Stabil)</div></div>
+          <i class="fa-solid fa-chevron-right" style="color:var(--text-dim); font-size:12px;"></i>
+        </div>
+      </div>
+
+      <button onclick="logoutApp()" class="btn-lux-primary" style="margin-top: 24px; background: rgba(255,0,85,0.15); color: var(--primary); border: 1px solid var(--primary); box-shadow: none;">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar dari Akun
+      </button>
+    </div>
+
+    <!-- HALAMAN 8: ADMIN CONTROL PANEL -->
+    <div id="page-admin" class="page-view">
+      <div id="adminKeyAuthBox" class="admin-gate-card">
+        <div class="gate-laser-shield">
+          <i class="fa-solid fa-shield-halved" style="font-size: 36px; color: var(--primary); filter: drop-shadow(0 0 12px var(--primary-glow));"></i>
+        </div>
+        <h3 class="admin-gate-title">PIRO ROOT ACCESS</h3>
+        <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 8px;">Sistem Keamanan Khusus Owner Piro Wangyy</p>
+
+        <div class="key-input-wrapper">
+          <input type="password" id="adminSecretKeyInput" class="key-input-lux" placeholder="•••••••••••••" />
+          <button type="button" class="btn-toggle-eye" onclick="toggleKeyVisibility()" title="Lihat/Sembunyikan Key">
+            <i class="fa-solid fa-eye" id="eyeKeyIcon"></i>
+          </button>
+        </div>
+
+        <button class="btn-key-unlock" onclick="verifyAdminKey()">
+          <i class="fa-solid fa-fingerprint" style="font-size: 18px;"></i> BUKA KONTROL PENUH
+        </button>
+      </div>
+
+      <div id="adminDashboardView" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid rgba(0,229,255,0.3);">
+          <div>
+            <div style="font-family:'Orbitron', sans-serif; font-size: 20px; font-weight:900; background:linear-gradient(90deg, #fff 0%, var(--secondary) 50%, var(--primary) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:1px;">
+              PIRO CENTRAL
+            </div>
+            <div style="font-size:10px; color:var(--success); display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-circle" style="font-size:7px; color:var(--success); filter:drop-shadow(0 0 6px var(--success));"></i> Online Master Controller</div>
+          </div>
+          <span class="role-badge-pill role-owner" style="box-shadow:0 0 12px var(--primary);"><i class="fa-solid fa-crown" style="color:var(--gold);"></i> OWNER ACTIVE</span>
+        </div>
+
+        <div class="admin-card-stat">
+          <div class="stat-box-cyber">
+            <div style="font-size: 10px; color: var(--text-dim); text-transform:uppercase; font-weight:700;">Total Pengguna</div>
+            <div class="stat-val-cyber" style="color:var(--secondary);" id="statTotalUsers">0</div>
+          </div>
+          <div class="stat-box-cyber">
+            <div style="font-size: 10px; color: var(--text-dim); text-transform:uppercase; font-weight:700;">VIP Members</div>
+            <div class="stat-val-cyber" style="color:var(--gold);" id="statTotalVip">0</div>
+          </div>
+          <div class="stat-box-cyber">
+            <div style="font-size: 10px; color: var(--text-dim); text-transform:uppercase; font-weight:700;">Katalog Produk</div>
+            <div class="stat-val-cyber" style="color:var(--success);" id="statTotalProducts">10</div>
+          </div>
+          <div class="stat-box-cyber">
+            <div style="font-size: 10px; color: var(--text-dim); text-transform:uppercase; font-weight:700;">Estimasi Omset</div>
+            <div class="stat-val-cyber" style="color:var(--primary); font-size:17px;" id="statTotalOmset">Rp 0</div>
+          </div>
+        </div>
+
+        <div class="admin-btn-action" onclick="toggleAdminSection('sec-users')">
+          <span><i class="fa-solid fa-users" style="color:var(--secondary); margin-right:8px;"></i> 1. Monitoring & Hapus User</span>
+          <span class="badge-btn-action">LIHAT LIST</span>
+        </div>
+        <div id="sec-users" class="admin-section-content">
+          <p style="font-size:11px; color:var(--text-dim); margin-bottom:12px;">Daftar akun pengguna, multi-role aktif, dan tombol reset total akun:</p>
+          <div id="adminUserListContainer"></div>
+        </div>
+
+        <div class="admin-btn-action" onclick="toggleAdminSection('sec-vip-manage')">
+          <span><i class="fa-solid fa-crown" style="color:var(--gold); margin-right:8px;"></i> 2. Kelola VIP Pembelian User</span>
+          <span class="badge-btn-action">VIP ORDER</span>
+        </div>
+        <div id="sec-vip-manage" class="admin-section-content">
+          <p style="font-size:11px; color:var(--text-dim); margin-bottom:10px;">Atur aktivasi atau pencabutan paket VIP hasil pembelian pelanggan:</p>
+          <div class="input-field">
+            <label>Email Pelanggan</label>
+            <input type="email" id="vipOrderEmail" placeholder="user@gmail.com" />
+          </div>
+          <div class="input-field">
+            <label>Pilih Paket VIP Langganan</label>
+            <select id="vipOrderPlanSelect">
+              <option value="VIP Mingguan (7 Hari)">VIP Mingguan (7 Hari)</option>
+              <option value="VIP Bulanan (30 Hari)">VIP Bulanan (30 Hari)</option>
+              <option value="VIP Tahunan (365 Hari)">VIP Tahunan (365 Hari)</option>
+              <option value="VIP Selamanya (Lifetime)">VIP Selamanya (Lifetime)</option>
+            </select>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-lux-primary" style="flex:1; background:linear-gradient(135deg, var(--gold), #ff8c00); color:#000;" onclick="adminActivateVipOrder()"><i class="fa-solid fa-plus"></i> Aktifkan VIP</button>
+            <button class="btn-lux-primary" style="flex:1; background:rgba(255,0,85,0.2); color:var(--primary); border:1px solid var(--primary); box-shadow:none;" onclick="adminRevokeVipOrder()"><i class="fa-solid fa-trash"></i> Hapus VIP</button>
+          </div>
+        </div>
+
+        <div class="admin-btn-action" onclick="toggleAdminSection('sec-role-manage')">
+          <span><i class="fa-solid fa-shield-cat" style="color:var(--secondary); margin-right:8px;"></i> 3. Role Setting Khusus Developer</span>
+          <span class="badge-btn-action">ATUR ROLE</span>
+        </div>
+        <div id="sec-role-manage" class="admin-section-content">
+          <p style="font-size:11px; color:var(--text-dim); margin-bottom:10px;">Developer dapat memberikan multi-role (numpuk role) atau mengubah role akun khusus:</p>
+          <div class="input-field">
+            <label>Email Target Role</label>
+            <input type="email" id="roleTargetEmail" placeholder="developer@gmail.com" />
+          </div>
+          <div class="input-field">
+            <label>Pilih Role Tambahan</label>
+            <select id="roleAddSelect">
+              <option value="OWNER">OWNER</option>
+              <option value="CEO">CEO</option>
+              <option value="RESELLER">RESELLER</option>
+              <option value="PARTNER">PARTNER</option>
+              <option value="PREMIUM">PREMIUM</option>
+              <option value="VIP">VIP</option>
+            </select>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-lux-primary" style="flex:1; background:linear-gradient(135deg, #00e5ff, #0077b6); color:#000;" onclick="adminAddRoleToUser()"><i class="fa-solid fa-layer-group"></i> Tambahkan Role (Numpuk)</button>
+            <button class="btn-lux-primary" style="flex:1; background:rgba(255,42,95,0.2); color:var(--danger); border:1px solid var(--danger); box-shadow:none;" onclick="adminResetRoleToNewbie()"><i class="fa-solid fa-rotate-left"></i> Reset ke NEWBIE</button>
+          </div>
+        </div>
+
+        <div class="admin-btn-action" onclick="toggleAdminSection('sec-history-manage')">
+          <span><i class="fa-solid fa-list-check" style="color:var(--gold); margin-right:8px;"></i> 4. Cek Pembelian & Riwayat (via Username)</span>
+          <span class="badge-btn-action">CEK ORDER</span>
+        </div>
+        <div id="sec-history-manage" class="admin-section-content">
+          <p style="font-size:11px; color:var(--text-dim); margin-bottom:12px;">Ketik username/nickname user untuk memeriksa transaksi dan memilih Terima, Proses, atau Tolak:</p>
+          <div class="input-field">
+            <label>Username / Nickname / Email User</label>
+            <input type="text" id="admOrderSearchUsername" placeholder="Contoh: ZUXCYN / user@gmail.com" />
+          </div>
+          <button class="btn-lux-primary" style="padding:10px; font-size:12px;" onclick="loadUserOrdersForAdmin()"><i class="fa-solid fa-magnifying-glass"></i> Cek Riwayat Pembelian User</button>
+          <div id="adminUserOrdersList" style="display:flex; flex-direction:column; gap:8px; margin-top:12px;"></div>
+        </div>
+
+        <div class="admin-btn-action" onclick="toggleAdminSection('sec-products-cms')">
+          <span><i class="fa-solid fa-boxes-stacked" style="color:var(--primary); margin-right:8px;"></i> 5. Kontrol Produk & Edit Harga Live</span>
+          <span class="badge-btn-action">EDIT PRODUK</span>
+        </div>
+        <div id="sec-products-cms" class="admin-section-content">
+          <div class="input-field">
+            <label>Pilih Produk</label>
+            <select id="adminProductSelect" onchange="loadProductToEdit()"></select>
+          </div>
+          <div class="input-field"><label>Judul Produk</label><input type="text" id="editProdTitle" /></div>
+          <div class="input-field"><label>URL Gambar (1:1)</label><input type="text" id="editProdImg" /></div>
+          <div class="input-field"><label>Badge / Waktu Proses</label><input type="text" id="editProdBadge" /></div>
+          <div class="input-field"><label>Paket & Harga (Format: Paket=Harga, pisahkan koma)</label><textarea id="editProdPackages" rows="3"></textarea></div>
+          <button class="btn-lux-primary" onclick="saveProductEdit()"><i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan Produk</button>
+        </div>
+
+        <button onclick="lockAdminPanel()" class="btn-lux-primary" style="margin-top:20px; background:rgba(255,255,255,0.08); color:#fff; border:1px solid var(--card-border); box-shadow:none;">
+          <i class="fa-solid fa-lock"></i> Kunci Kembali Panel Admin
+        </button>
+      </div>
+    </div>
+
+    <!-- SUB-PAGE: SHOP BORDER AVATAR -->
+    <div id="subpage-border-shop" class="page-view">
+      <div class="subpage-header">
+        <button class="btn-back" onclick="backToProfile()"><i class="fa-solid fa-arrow-left"></i></button>
+        <h3 style="font-size: 16px; font-weight: 700;">Shop Border Avatar</h3>
+      </div>
+
+      <div class="glass-box" style="padding: 16px; margin-bottom: 14px; background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(88,101,242,0.1));">
+        <h4 style="font-size: 14px; color: var(--gold); margin-bottom: 4px;"><i class="fa-solid fa-store"></i> Toko Border Eksklusif</h4>
+        <p style="font-size: 11px; color: var(--text-dim);">Member Newbie dapat membeli border impian secara satuan (Rp 5.000 - Rp 15.000), atau berlangganan VIP untuk mendapatkan gratis seluruh 80 border.</p>
+      </div>
+
+      <div class="shop-catalog-grid" id="shopBorderCatalog"></div>
+    </div>
+
+    <!-- SUB-PAGE: EDIT PROFIL -->
+    <div id="subpage-edit-profile" class="page-view">
+      <div class="subpage-header">
+        <button class="btn-back" onclick="backToProfile()"><i class="fa-solid fa-arrow-left"></i></button>
+        <h3 style="font-size: 16px; font-weight: 700;">Edit Profil</h3>
+      </div>
+
+      <div class="glass-box" style="padding: 20px; margin-bottom: 15px;">
+        <div style="text-align: center; margin-bottom: 16px;">
+          <div class="discord-avatar-container" id="editAvatarPreviewWrapper" style="margin: 0 auto;">
+            <div class="avatar-crop-box">
+              <img id="editAvatarPreviewImg" class="discord-avatar-img" src="" />
+            </div>
+            <div id="editAvatarShapeFrame" class="discord-shape-frame"></div>
+          </div>
+          
+          <div id="cropAdjustControls" style="margin-top:10px; display:flex; flex-direction:column; align-items:center; gap:4px;">
+            <label style="font-size:10px; color:var(--text-dim); text-transform:uppercase; font-weight:700;">
+              <i class="fa-solid fa-magnifying-glass-plus"></i> Sesuaikan / Pangkas Zoom Foto
+            </label>
+            <input type="range" id="avatarZoomSlider" min="1" max="2.5" step="0.05" value="1" style="width:180px;" oninput="adjustAvatarZoom(this.value)">
+          </div>
+
+          <div style="display:flex; gap:8px; justify-content:center; margin-top:12px; flex-wrap:wrap;">
+            <label id="btnUploadAvatarLabel" class="btn-lux-primary" style="width:auto; padding:8px 14px; font-size:11px; cursor:pointer;">
+              <i class="fa-solid fa-user-circle"></i> Ganti Foto Profil
+              <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
+            </label>
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label id="lblEditName">Nama Pengguna / Nickname</label>
+          <input type="text" id="editUsernameInput" placeholder="Ketik nama baru..." />
+        </div>
+
+        <div class="input-field">
+          <label id="lblEditStatus">Status Custom</label>
+          <input type="text" id="editStatusInput" placeholder="Contoh: Pick a mythical creature as a pet..." />
+        </div>
+
+        <div class="input-field">
+          <label id="lblEditEmail">Email Pengguna</label>
+          <input type="email" id="editEmailInput" placeholder="Ketik email..." />
+        </div>
+
+        <div class="input-field">
+          <label id="lblEditBorderTitle">Pilih Desain Border Avatar (On / Off)</label>
+          <div id="borderChoiceGridContainer">
+            <div class="border-grid-container" id="borderChoiceGrid"></div>
+          </div>
+          <div id="newbieNoBorderNotice" style="display:none; text-align:center; padding:16px; background:rgba(255,255,255,0.03); border:1px solid var(--card-border); border-radius:12px; margin-top:8px;">
+            <i class="fa-solid fa-circle-exclamation" style="color:var(--gold); font-size:22px; margin-bottom:6px;"></i>
+            <div style="font-size:12px; font-weight:800; color:#fff;">Kamu belum mempunyai Border</div>
+            <p style="font-size:11px; color:var(--text-dim); margin:4px 0 10px;">Beli border di Shop atau upgrade status ke VIP untuk mendapatkan gratis semua 80 border.</p>
+            <button class="btn-lux-primary" style="padding:8px 14px; font-size:11px; width:auto;" onclick="openSubPage('subpage-border-shop')">
+              <i class="fa-solid fa-cart-shopping"></i> Buka Shop Border
+            </button>
+          </div>
+        </div>
+
+        <button id="btnSaveProfile" class="btn-lux-primary" onclick="saveUserProfileChanges()" style="margin-top:14px;">
+          <i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan Profil
+        </button>
+      </div>
+    </div>
+
+    <!-- SUB-PAGE: CEK STATUS ROLE -->
+    <div id="subpage-role-check" class="page-view">
+      <div class="subpage-header">
+        <button class="btn-back" onclick="backToProfile()"><i class="fa-solid fa-arrow-left"></i></button>
+        <h3 style="font-size: 16px; font-weight: 700;">Informasi Status Role Akun</h3>
+      </div>
+
+      <div class="glass-box" style="padding: 22px 18px; text-align: center;">
+        <div style="width: 70px; height: 70px; margin: 0 auto 12px; border-radius: 50%; background: rgba(0,229,255,0.1); display: flex; align-items: center; justify-content: center;">
+          <i class="fa-solid fa-shield-halved" style="font-size: 32px; color: var(--secondary);"></i>
+        </div>
+        <h3 style="font-size: 17px; font-weight: 800; margin-bottom: 4px;" id="roleCheckTitle">NEWBIE</h3>
+        <p style="font-size: 12px; color: var(--text-dim); line-height: 1.5;" id="roleCheckDesc">
+          Anda berstatus member biasa (NEWBIE). Upgrade ke VIP untuk membuka fitur Edit Profil penuh, Border Avatar gratis, Diskon 50%, dan Bonus 500+ Poin!
+        </p>
+
+        <div style="text-align: left; background: rgba(0,0,0,0.3); border-radius: 14px; padding: 14px; margin: 18px 0; font-size: 12px; color: var(--text-white); display:flex; flex-direction:column; gap:8px;">
+          <div><b>Akses Edit Profil:</b> <span id="roleAccessEditProfile" style="color:var(--danger); font-weight:700;">Terkunci 🔒</span></div>
+          <div><b>Diskon VIP:</b> <span id="roleAccessDiscount" style="color:var(--danger); font-weight:700;">Nonaktif ❌</span></div>
+          <div><b>Role Dimiliki:</b> <span id="roleAccessMultiList" style="color:var(--gold); font-weight:700;">NEWBIE</span></div>
+        </div>
+
+        <button id="btnRoleUpgradeVip" class="btn-lux-primary" onclick="switchPage('page-vip', document.querySelectorAll('.nav-tab-item')[2])">
+          <i class="fa-solid fa-crown"></i> Tingkatkan Role ke VIP
+        </button>
+      </div>
+    </div>
+
+    <!-- SUB-PAGE LAINNYA -->
+    <div id="subpage-help-center" class="page-view">
+      <div class="subpage-header"><button class="btn-back" onclick="backToProfile()"><i class="fa-solid fa-arrow-left"></i></button><h3 style="font-size: 16px; font-weight: 700;">Pusat Bantuan</h3></div>
+      <div class="glass-box" style="padding: 16px; margin-bottom: 14px;"><h4 style="font-size: 14px; color: var(--secondary); margin-bottom: 6px;">Berapa lama proses pesanan?</h4><p style="font-size: 12px; color: var(--text-dim);">Diamond MLBB 8-20 menit. Akun Premium & Like TikTok diproses slow 1-24 jam.</p></div>
+      <a href="https://wa.me/6283161621493?text=Halo%20Admin%20Pirostore,%20saya%20butuh%20bantuan" target="_blank" class="btn-lux-primary" style="display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none;"><i class="fa-brands fa-whatsapp"></i> Hubungi CS Langsung</a>
+    </div>
+
+    <div id="subpage-feedback" class="page-view">
+      <div class="subpage-header"><button class="btn-back" onclick="backToProfile()"><i class="fa-solid fa-arrow-left"></i></button><h3 style="font-size: 16px; font-weight: 700;">Kirim Masukan</h3></div>
+      <div class="glass-box" style="padding: 18px;">
+        <div class="input-field"><label>Kategori Masukan</label><select id="fbCategory"><option>Laporan Bug / Masalah Teknis</option><option>Saran Fitur Baru</option><option>Masukan Pelayanan / Produk</option><option>Lainnya</option></select></div>
+        <div class="input-field"><label>Pesan / Masukan Anda</label><textarea id="fbText" rows="4" placeholder="Jelaskan kendala atau saran Anda untuk Pirostore..."></textarea></div>
+        <button class="btn-lux-primary" onclick="sendFeedbackWA()"><i class="fa-solid fa-paper-plane"></i> Kirim Masukan ke Developer</button>
+      </div>
+    </div>
+
+    <div id="subpage-terms" class="page-view">
+      <div class="subpage-header"><button class="btn-back" onclick="backToProfile()"><i class="fa-solid fa-arrow-left"></i></button><h3 style="font-size: 16px; font-weight: 700;">Ketentuan & Kebijakan Privasi</h3></div>
+      <div class="glass-box" style="padding: 16px; font-size: 12px; line-height: 1.6; color: var(--text-dim);"><h4 style="color: var(--text-white); margin-bottom: 6px;">1. Ketentuan Pembelian</h4><p style="margin-bottom: 12px;">Semua transaksi pembayaran QRIS dilakukan secara langsung ke rekening resmi owner pirowangyy.</p><h4 style="color: var(--text-white); margin-bottom: 6px;">2. Keamanan Data</h4><p style="margin-bottom: 12px;">Pirostore tidak pernah meminta kata sandi akun game maupun akun TikTok Anda.</p></div>
+    </div>
+
+    <div id="subpage-report" class="page-view">
+      <div class="subpage-header"><button class="btn-back" onclick="backToProfile()"><i class="fa-solid fa-arrow-left"></i></button><h3 style="font-size: 16px; font-weight: 700;">Laporan Saluran</h3></div>
+      <div class="glass-box" style="padding: 18px; text-align: center;"><i class="fa-solid fa-circle-nodes" style="font-size: 40px; color: var(--secondary); margin-bottom: 12px;"></i><h4 style="font-size: 15px; margin-bottom: 6px;">Status Server & Saluran</h4><div style="font-size: 12px; color: var(--success); font-weight: 700; margin-bottom: 16px;"><i class="fa-solid fa-circle"></i> Semua Saluran Operasional Normal (100%)</div><a href="https://wa.me/6283161621493?text=Halo%20Admin,%20saya%20ingin%20melaporkan%20saluran/grup" target="_blank" class="btn-lux-primary" style="display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none;"><i class="fa-solid fa-triangle-exclamation"></i> Buat Laporan Saluran</a></div>
+    </div>
+
+    <div id="subpage-app-info" class="page-view">
+      <div class="subpage-header"><button class="btn-back" onclick="backToProfile()"><i class="fa-solid fa-arrow-left"></i></button><h3 style="font-size: 16px; font-weight: 700;">Info Aplikasi</h3></div>
+      <div class="glass-box" style="padding: 24px 20px; text-align: center;"><img src="https://cdn.phototourl.com/member/2026-08-27-5b41a41c-b768-49cc-931b-92a2f9b3bc9b.jpg" style="width: 80px; height: 80px; border-radius: 20px; border: 2px solid var(--secondary); margin-bottom: 14px;" /><h3 style="font-size: 18px; font-weight: 800; letter-spacing: 1px;">PIROSTORE</h3><p style="font-size: 12px; color: var(--gold); font-weight: 700; margin: 4px 0 16px;">Versi 1.12.0 (Stabil)</p><div style="text-align: left; font-size: 12px; color: var(--text-dim); border-top: 1px solid var(--card-border); padding-top: 14px; display:flex; flex-direction:column; gap:8px;"><div><b>Developer:</b> pirowangyy</div><div><b>Kontak Resmi:</b> +62 831-6162-1493</div><div><b>Fitur:</b> 8 Halaman Lengkap + Admin Central Panel KEY_PIRO2526</div></div></div>
+    </div>
+
+    <!-- BOTTOM NAVBAR -->
+    <div class="bottom-navbar">
+      <div class="nav-tab-item active" onclick="switchPage('page-home', this)"><i class="fa-solid fa-house"></i><span>Beranda</span></div>
+      <div class="nav-tab-item" onclick="switchPage('page-services', this)"><i class="fa-solid fa-tags"></i><span>Harga</span></div>
+      <div class="nav-tab-item" onclick="switchPage('page-vip', this)"><i class="fa-solid fa-crown" style="color: var(--gold);"></i><span>VIP</span></div>
+      <div class="nav-tab-item" onclick="switchPage('page-tracking', this)"><i class="fa-solid fa-magnifying-glass"></i><span>Cari User</span></div>
+      <div class="nav-tab-item" onclick="switchPage('page-history', this)"><i class="fa-solid fa-clock-rotate-left"></i><span>Riwayat</span></div>
+      <div class="nav-tab-item" onclick="switchPage('page-community', this)"><i class="fa-solid fa-headset"></i><span>Kontak</span></div>
+      <div class="nav-tab-item" onclick="switchPage('page-profile', this)"><i class="fa-solid fa-user"></i><span>Profil</span></div>
+      <div class="nav-tab-item admin-nav" onclick="switchPage('page-admin', this)"><i class="fa-solid fa-shield-halved" style="color: var(--primary);"></i><span>Admin</span></div>
+    </div>
+
+  </div>
+
+  <div class="lux-modal-dialog" id="luxCustomAlertModal">
+    <div class="lux-modal-box" id="luxModalBoxInner">
+      <div class="lux-modal-icon-wrap" id="luxModalIcon">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 id="luxModalTitle" style="font-size: 17px; font-weight: 800; margin-bottom: 6px;">Perhatian!</h3>
+      <p id="luxModalMessage" style="font-size: 12px; color: var(--text-dim); line-height: 1.5; margin-bottom: 20px;">Pesan notifikasi...</p>
+      <button class="btn-lux-primary" id="luxModalBtn" onclick="closeLuxAlert()">Mengerti</button>
+    </div>
+  </div>
+
+  <div class="lux-modal-dialog" id="vipInfoCardModal">
+    <div class="vip-info-card-container">
+      <div class="vip-info-card-header">
+        <div>
+          <div class="vip-info-card-title">Keanggotaan Berlangganan</div>
+          <div style="font-size: 11px; color: #64748b; margin-top: 2px;">Pirostore Luxury System</div>
+        </div>
+        <div class="vip-info-badge-status">
+          <div style="color: #0f172a; font-weight:900;">VIP ANGGOTA</div>
+          <div style="color: #00c988; font-weight:800;" id="vipCardModalTier">BERLANGGANAN SELAMANYA</div>
+        </div>
+      </div>
+
+      <div style="font-size: 12px; font-weight: 800; margin-bottom: 8px; color:#111;">
+        Manfaat Fitur VIP :
+      </div>
+      <ul class="vip-info-list">
+        <li>- Dapet diskon 50%</li>
+        <li>- Dapet poin 500+ buat beli apk prem, top up</li>
+        <li>- Order langsung cepat tanpa langsung pc admin</li>
+        <li>- Bisa garansi kalo ada kendala</li>
+        <li>- Bisa ubah foto profil dan nickname</li>
+        <li>- Dapet border bentuk Discord gratis (80 Pilihan)</li>
+      </ul>
+
+      <div class="vip-info-footer">
+        <div>
+          <div style="font-size: 11px; color: #64748b;">Perpanjang berikutnya:</div>
+          <div style="font-size: 12px; font-weight: 800; color: #0f172a;" id="vipCardModalExpire">Selamanya</div>
+        </div>
+        <button class="vip-manage-btn" onclick="closeVipInfoModal()">TUTUP</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="checkoutModal">
+    <div class="modal-sheet">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 id="modalTitle" style="font-size: 16px; font-weight: 800;">Form Pemesanan</h3>
+        <button onclick="closeOrderModal()" style="background:none; border:none; color:var(--text-dim); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+
+      <div class="input-field" id="packageSelectField">
+        <label>Pilih Paket</label>
+        <select id="modalPackageSelect"></select>
+      </div>
+
+      <div id="mlbbInputGroup" style="display: none;">
+        <div class="input-field"><label>1. Masukkan User ID</label><input type="number" id="mlUserId" placeholder="Contoh: 12345678" /></div>
+        <div class="input-field"><label>2. Masukkan Zone ID</label><input type="number" id="mlZoneId" placeholder="Contoh: 2024" /></div>
+      </div>
+
+      <div id="generalInputGroup" style="display: none;">
+        <div class="input-field"><label id="generalInputLabel">Target / Data Akun</label><input type="text" id="generalInput" placeholder="Masukkan Target / Email Fresh / No HP..." /></div>
+      </div>
+
+      <div style="font-size: 12px; color: var(--gold); font-weight: 700; margin-top: 10px;">
+        <i class="fa-solid fa-qrcode"></i> Scan QRIS Resmi Pirostore di Bawah:
+      </div>
+
+      <div class="qris-frame">
+        <img id="qrisModalImg" src="https://cdn.phototourl.com/member/2026-08-27-602c4257-f0ad-405d-8c33-e61c9c801464.jpg" alt="QRIS Pirostore" />
+        <p style="color: #222; font-size: 11px; font-weight: 800; margin-top: 6px;">QRIS RESMI PIROSTORE (PIRO WANGYY)</p>
+      </div>
+
+      <button class="btn-lux-primary" onclick="confirmOrderWhatsApp()" style="background: #25d366; color: #fff; box-shadow: 0 4px 15px rgba(37,211,102,0.4);">
+        <i class="fa-brands fa-whatsapp"></i> Konfirmasi Pesanan via WhatsApp
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyD3v3avQGZn6LpSfXft9sgNcOcroNeTN1A",
+    authDomain: "pirostore-db.firebaseapp.com",
+    databaseURL: "https://pirostore-db-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "pirostore-db",
+    storageBucket: "pirostore-db.firebasestorage.app",
+    messagingSenderId: "914886420309",
+    appId: "1:914886420309:web:51204859f14b2a6a0e31dc",
+    measurementId: "G-8FSV9CJWNY"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const GOOGLE_CLIENT_ID = "891259431613-jn8rlebsu0prgdq6gu3ve16i4kd8h25i.apps.googleusercontent.com";
+
+  const borderPresets = [
+    { id: 'b-0', name: 'Hellflame Aura', price: 'Rp 6.000', style: 'border: 3.5px dashed #ff0055; box-shadow: 0 0 18px #ff0055, inset 0 0 10px #ff7700; outline: 2px solid #ff7700;' },
+    { id: 'b-1', name: 'Lord Hades Cyan', price: 'Rp 8.000', style: 'border: 4px double #00e5ff; box-shadow: 0 0 22px #00e5ff, 0 0 35px rgba(0,229,255,0.4);' },
+    { id: 'b-2', name: 'Zen Sakura Blossom', price: 'Rp 7.000', style: 'border: 3.5px dotted #f472b6; box-shadow: 0 0 18px #f472b6, inset 0 0 8px #fda4af; outline: 2px dashed #fda4af;' },
+    { id: 'b-3', name: 'Vengeance Spikes', price: 'Rp 9.000', style: 'border: 4px solid #a855f7; box-shadow: 0 0 20px #a855f7, 0 0 30px #ec4899; outline: 3px double #ec4899;' },
+    { id: 'b-4', name: 'Hellhound Beast', price: 'Rp 12.000', style: 'border: 4px groove #ea580c; box-shadow: 0 0 25px #ea580c, 0 0 35px #facc15; outline: 2px solid #facc15;' },
+    { id: 'b-5', name: 'Bonsai Eternity', price: 'Rp 10.000', style: 'border: 3.5px solid #10b981; box-shadow: 0 0 20px #10b981, inset 0 0 12px #34d399;' },
+    { id: 'b-6', name: 'Imperial Dragon Gold', price: 'Rp 14.000', style: 'border: 4.5px double #ffd700; box-shadow: 0 0 25px #ffd700, 0 0 35px rgba(255,215,0,0.6); outline: 2px solid #ff8c00;' },
+    { id: 'b-7', name: 'Cyberpunk Neon Wave', price: 'Rp 8.500', style: 'border: 3.5px dashed #38bdf8; box-shadow: 0 0 20px #38bdf8, 0 0 30px #818cf8;' },
+    { id: 'b-8', name: 'Blood Ruby Crimson', price: 'Rp 15.000', style: 'border: 4.5px solid #e11d48; box-shadow: 0 0 25px #e11d48, 0 0 40px rgba(225,29,72,0.8);' },
+    { id: 'b-9', name: 'Mythic Cosmic Void', price: 'Rp 15.000', style: 'border: 4.5px double #8b5cf6; box-shadow: 0 0 30px #8b5cf6, 0 0 45px #00e5ff; outline: 2px dashed #00e5ff;' }
+  ];
+
+  const colorPalettes = ['#ff0055', '#00e5ff', '#ffd700', '#00f5a0', '#a855f7', '#ff6b00', '#3b82f6', '#ec4899', '#14b8a6', '#f43f5e'];
+  const shapeTypes = ['dashed', 'double', 'groove', 'dotted', 'solid'];
+  for (let i = 10; i < 80; i++) {
+    const c1 = colorPalettes[i % colorPalettes.length];
+    const c2 = colorPalettes[(i + 3) % colorPalettes.length];
+    const borderType = shapeTypes[i % shapeTypes.length];
+    const borderWidth = (i % 3 === 0) ? '4px' : (i % 3 === 1) ? '3.5px' : '3px';
+    const priceVal = 5000 + ((i * 350) % 10000);
+    borderPresets.push({
+      id: `b-${i}`,
+      name: `Discord Aura #${i + 1}`,
+      price: `Rp ${priceVal.toLocaleString('id-ID')}`,
+      style: `border: ${borderWidth} ${borderType} ${c1}; box-shadow: 0 0 ${(i%15)+12}px ${c2}, inset 0 0 6px ${c1};`
+    });
+  }
+
+  const defaultCatalogDB = {
+    AM_PREMIUM: {
+      name: "AM PREMIUM",
+      type: "GENERAL",
+      img: "https://cdn.phototourl.com/member/2026-08-27-8cf0e5af-13e7-46af-bf8a-f635ded2bc81.jpg",
+      badge: "Stok Gene: 88 | 1-24 Jam",
+      notes: "• Email harus fresh 🍃 | No verif 🚫<br>• Acc link harus stay/on terus ❕️<br>• No PHP ❗️ | Terpercaya ✅",
+      packages: [
+        { label: "1thn gene c (generator)", price: "Rp 100" },
+        { label: "1thn link c (via link)", price: "Rp 500" },
+        { label: "1thn vilog b (via login)", price: "Rp 1.500" },
+        { label: "1thn seller s (via account)", price: "Rp 20.000" }
+      ]
+    },
+    CANVA: {
+      name: "CANVA PREMIUM",
+      type: "GENERAL",
+      img: "https://cdn.phototourl.com/member/2026-08-27-d7a4868c-7960-400e-bfbb-445d8d0a45ef.jpg",
+      badge: "Proses 1-24 Jam",
+      notes: "• PC mimin kalo mau order 💖<br>• Desain pro tanpa watermark<br>• No PHP ❗️ | Terpercaya ✅",
+      packages: [
+        { label: "1b member", price: "Rp 150" },
+        { label: "1b desaig", price: "Rp 290" },
+        { label: "1b admin", price: "Rp 1.500" },
+        { label: "1b owner", price: "Rp 9.900" }
+      ]
+    },
+    CAPCUT: {
+      name: "CAPCUT PRO",
+      type: "GENERAL",
+      img: "https://cdn.phototourl.com/member/2026-08-27-5c34de36-6c04-4577-9e59-15e204ac0a8d.jpg",
+      badge: "Android & iOS Support",
+      notes: "• Fitur Pro Unlock, Efek & Cloud Aktif<br>• Proses slow 1 - 24jam ⏰<br>• No PHP ❗️ | Terpercaya ✅",
+      packages: [
+        { label: "7h privt (android)", price: "Rp 14.800" },
+        { label: "1b shar (android)", price: "Rp 17.900" },
+        { label: "7h privt (avail ios)", price: "Rp 18.000" }
+      ]
+    },
+    NETFLIX: {
+      name: "NETFLIX PREMIUM",
+      type: "GENERAL",
+      img: "https://cdn.phototourl.com/free/2026-08-27-b1daedbb-467b-431d-9676-8efd65c39ee6.jpg",
+      badge: "Ultra HD 4K | 1-24 Jam",
+      notes: "• Harus stay/on terus ❕️<br>• PC mimin kalo mau order 💖<br>• No PHP ❗️ | Terpercaya ✅",
+      packages: [
+        { label: "7h 1p1u", price: "Rp 15.000" },
+        { label: "7h 1p2u", price: "Rp 16.000" }
+      ]
+    },
+    IBIS_PAINT: {
+      name: "IBIS PAINT PREMIUM",
+      type: "GENERAL",
+      img: "https://cdn.phototourl.com/free/2026-08-27-1d951775-bc2d-4d1e-be31-5c27341f08c8.jpg",
+      badge: "Full Brush Unlock",
+      notes: "• Seller C Pilihan Terbaik<br>• Proses slow 1 - 24jam ⏰<br>• No PHP ❗️ | Terpercaya ✅",
+      packages: [
+        { label: "7h seller c", price: "Rp 1.000" },
+        { label: "1b seller c", price: "Rp 2.000" }
+      ]
+    },
+    CHATGPT: {
+      name: "CHATGPT PLUS",
+      type: "GENERAL",
+      img: "https://cdn.phototourl.com/free/2026-08-27-3456c539-711c-4b13-bd8b-ceb8f6280631.jpg",
+      badge: "GPT-4 & DALL-E Aktif",
+      notes: "• Sharing 8 User Aman & Stabil<br>• Proses slow 1 - 24jam ⏰<br>• No PHP ❗️ | Terpercaya ✅",
+      packages: [
+        { label: "7h shar 8u", price: "Rp 14.500" },
+        { label: "1b shar 8u", price: "Rp 22.500" }
+      ]
+    },
+    WINK: {
+      name: "WINK PREMIUM",
+      type: "GENERAL",
+      img: "https://cdn.phototourl.com/free/2026-08-27-a0907c62-14cd-4229-abf3-a4298562507b.jpg",
+      badge: "HD & AI Video Restorer",
+      notes: "• Support Android & iOS<br>• Proses slow 1 - 24jam ⏰<br>• No PHP ❗️ | Terpercaya ✅",
+      packages: [
+        { label: "7h seller c (Android)", price: "Rp 3.900" },
+        { label: "7h seller c (iOS)", price: "Rp 5.500" }
+      ]
+    },
+    TT_RIFFIL: {
+      name: "LIKE VIDEO TT RIFFIL",
+      type: "GENERAL",
+      img: "https://cdn.phototourl.com/member/2026-08-27-e3cba4d4-16ec-4a83-b4fc-81ab1212c862.jpg",
+      badge: "Proses 1x24 Jam",
+      notes: "• Salah kirim nickname TT, bukan tanggung jawab admin/owner<br>• Bisa turun kapan saja ➖<br>• No PHP ❗️ | Terpercaya ✅",
+      packages: [
+        { label: "6k Likes", price: "Rp 3.000" },
+        { label: "10k Likes", price: "Rp 4.000" },
+        { label: "16k Likes", price: "Rp 8.000" },
+        { label: "32k Likes", price: "Rp 16.000" }
+      ]
+    },
+    TT_ORI: {
+      name: "LIKE VIDEO TT ORI",
+      type: "GENERAL",
+      img: "https://cdn.phototourl.com/member/2026-08-27-f53e066d-d0ac-4856-aaec-44a91a9c5309.jpg",
+      badge: "Kualitas Original",
+      notes: "• Masukkan link video VT TikTok dengan benar<br>• No PHP ❗️ | Terpercaya ✅",
+      packages: [
+        { label: "1k Likes", price: "Rp 9.000" },
+        { label: "5k Likes", price: "Rp 45.000" },
+        { label: "10k Likes", price: "Rp 90.000" },
+        { label: "15k Likes", price: "Rp 135.000" }
+      ]
+    },
+    MLBB: {
+      name: "DIAMOND MOBILE LEGENDS",
+      type: "MLBB",
+      img: "https://cdn.phototourl.com/member/2026-08-27-0212fe8a-a5c2-441c-b246-afa01c1a22bb.jpg",
+      badge: "8 - 20 Menit Siap",
+      notes: "• Hanya support nominal yang tertera 💎<br>• 100% Legal & Terpercaya ✅",
+      packages: [
+        { label: "5 💎 Diamond", price: "Rp 2.570" },
+        { label: "22 💎 Diamond", price: "Rp 7.920" },
+        { label: "50 💎 Diamond", price: "Rp 15.500" },
+        { label: "60 💎 Diamond", price: "Rp 21.100" },
+        { label: "85 💎 Diamond", price: "Rp 23.670" },
+        { label: "100 💎 Diamond", price: "Rp 27.967" },
+        { label: "185 💎 Diamond", price: "Rp 49.590" },
+        { label: "222 💎 Diamond", price: "Rp 58.340" },
+        { label: "257 💎 Diamond", price: "Rp 68.890" },
+        { label: "355 💎 Diamond", price: "Rp 95.000" },
+        { label: "448 💎 Diamond", price: "Rp 145.200" },
+        { label: "568 💎 Diamond", price: "Rp 182.900" },
+        { label: "600 💎 Diamond", price: "Rp 190.000" }
+      ]
+    }
+  };
+
+  let catalogDB = JSON.parse(localStorage.getItem('piro_custom_catalog')) || defaultCatalogDB;
+  let activeUser = null;
+  let globalCloudUsers = [];
+  let selectedCategory = "";
+  let isVipOrder = false;
+  let currentVipPlan = null;
+  let isAdminAuthenticated = false;
+  let tempAvatarBase64 = null;
+  let selectedBorderIndex = null;
+  let avatarZoomScale = 1;
+
+  function sanitizeKey(email) {
+    return (email || 'unknown').replace(/[.#$[\]]/g, '_').toLowerCase();
+  }
+
+  function listenToCloudUsers() {
+    db.ref('users').on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        globalCloudUsers = Object.keys(data).map(key => data[key]);
+      } else {
+        globalCloudUsers = [];
+      }
+      localStorage.setItem('piro_registered_users', JSON.stringify(globalCloudUsers));
+      
+      if (activeUser) {
+        const fresh = globalCloudUsers.find(u => u.email.toLowerCase() === activeUser.email.toLowerCase());
+        
+        if (fresh) {
+          activeUser = fresh;
+          localStorage.setItem('piro_active_user', JSON.stringify(fresh));
+          updateVipUIState();
+        } else {
+          showLuxAlert("Pemberitahuan Developer", "Akun kamu telah di-reset/dihapus oleh developer. Silakan daftar ulang.", "danger");
+          setTimeout(() => {
+            logoutApp();
+          }, 2500);
+        }
+      }
+
+      if (isAdminAuthenticated) {
+        loadAdminDashboardData();
+      }
+    });
+  }
+
+  listenToCloudUsers();
+
+  function saveRegisteredUser(userObj) {
+    userObj.lastLogin = new Date().toLocaleString('id-ID');
+    userObj.roles = userObj.roles || ['NEWBIE'];
+    userObj.vip = userObj.vip || false;
+    userObj.vipTier = userObj.vipTier || 'NEWBIE';
+    userObj.vipExpire = userObj.vipExpire || null;
+    userObj.borderIndex = (userObj.borderIndex !== undefined) ? userObj.borderIndex : null;
+    userObj.ownedBorders = userObj.ownedBorders || [];
+    userObj.points = userObj.points || 100;
+    userObj.customStatus = userObj.customStatus || 'Pick a mythical creature as a pet';
+
+    const cloudKey = sanitizeKey(userObj.email);
+    db.ref('users/' + cloudKey).update(userObj);
+
+    let users = getRegisteredUsers();
+    let idx = users.findIndex(u => u.email.toLowerCase() === userObj.email.toLowerCase());
+    if (idx !== -1) {
+      users[idx] = { ...users[idx], ...userObj };
+    } else {
+      users.unshift(userObj);
+    }
+    localStorage.setItem('piro_registered_users', JSON.stringify(users));
+  }
+
+  function getRegisteredUsers() {
+    if (globalCloudUsers && globalCloudUsers.length > 0) return globalCloudUsers;
+    let users = JSON.parse(localStorage.getItem('piro_registered_users') || '[]');
+    users.forEach(u => checkVipExpiryStatus(u));
+    return users;
+  }
+
+  function parseJwt(token) {
+    let base64Url = token.split('.')[1];
+    let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    let jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  }
+
+  function handleGoogleNativeCredential(response) {
+    let email, name, avatar;
+
+    if (response && response.credential) {
+      const profile = parseJwt(response.credential);
+      email = profile.email;
+      name = email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '');
+      name = 'Newuser' + (name ? '_' + name : '');
+      avatar = profile.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=00e5ff&color=000`;
+    } else if (response && response.customProf) {
+      email = response.customProf.email;
+      name = email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '');
+      name = 'Newuser' + (name ? '_' + name : '');
+      avatar = response.customProf.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=00e5ff&color=000`;
+    }
+
+    if (!email) return;
+
+    let users = getRegisteredUsers();
+    let matchedUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+    if (!matchedUser) {
+      matchedUser = {
+        name: name,
+        email: email,
+        avatar: avatar,
+        roles: ["NEWBIE"],
+        vip: false,
+        vipTier: 'NEWBIE',
+        vipExpire: null,
+        borderIndex: null,
+        ownedBorders: [],
+        points: 100,
+        customStatus: 'Pick a mythical creature as a pet'
+      };
+    } else {
+      matchedUser.avatar = avatar;
+    }
+
+    saveRegisteredUser(matchedUser);
+    loginSuccess(matchedUser);
+  }
+
+  function setupGoogleNativeService() {
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleNativeCredential,
+        auto_select: false,
+        cancel_on_tap_outside: true,
+        use_fedcm_for_prompt: true
+      });
+    }
+  }
+
+  function connectGoogleAccount() {
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+      google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          if (google.accounts.oauth2) {
+            const tokenClient = google.accounts.oauth2.initTokenClient({
+              client_id: GOOGLE_CLIENT_ID,
+              scope: 'email profile openid',
+              prompt: '',
+              callback: (res) => {
+                if (res.access_token) {
+                  fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                    headers: { Authorization: `Bearer ${res.access_token}` }
+                  })
+                  .then(r => r.json())
+                  .then(prof => {
+                    handleGoogleNativeCredential({ credential: null, customProf: prof });
+                  });
+                }
+              }
+            });
+            tokenClient.requestAccessToken();
+          }
+        }
+      });
+    } else {
+      showLuxAlert("Layanan Google", "Koneksi Google sedang dimuat, silakan coba lagi beberapa saat.", "danger");
+    }
+  }
+
+  function getUserRoles(user) {
+    if (!user) return ['NEWBIE'];
+    if (Array.isArray(user.roles) && user.roles.length > 0) return user.roles;
+    if (user.role) return [user.role];
+    if (user.vip) return ['VIP'];
+    return ['NEWBIE'];
+  }
+
+  function isUserPrivileged(user) {
+    if (!user) return false;
+    const roles = getUserRoles(user).map(r => r.toUpperCase());
+    const allowed = ['VIP', 'OWNER', 'RESELLER', 'CEO', 'PARTNER', 'PREMIUM'];
+    return roles.some(r => allowed.includes(r)) || user.vip;
+  }
+
+  function showLuxAlert(title, message, type = "danger") {
+    const modal = document.getElementById('luxCustomAlertModal');
+    const box = document.getElementById('luxModalBoxInner');
+    const iconWrap = document.getElementById('luxModalIcon');
+    const titleEl = document.getElementById('luxModalTitle');
+    const msgEl = document.getElementById('luxModalMessage');
+    const btnEl = document.getElementById('luxModalBtn');
+
+    titleEl.innerText = title;
+    msgEl.innerText = message;
+
+    if (type === "danger") {
+      box.style.border = "2px solid var(--danger)";
+      box.style.boxShadow = "0 0 30px rgba(255, 42, 95, 0.4)";
+      iconWrap.style.background = "rgba(255, 42, 95, 0.15)";
+      iconWrap.style.color = "var(--danger)";
+      iconWrap.innerHTML = '<i class="fa-solid fa-lock"></i>';
+      btnEl.style.background = "linear-gradient(135deg, var(--danger), #88002a)";
+      btnEl.style.color = "#fff";
+    } else if (type === "success") {
+      box.style.border = "2px solid var(--success)";
+      box.style.boxShadow = "0 0 30px rgba(0, 245, 160, 0.4)";
+      iconWrap.style.background = "rgba(0, 245, 160, 0.15)";
+      iconWrap.style.color = "var(--success)";
+      iconWrap.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+      btnEl.style.background = "linear-gradient(135deg, var(--success), #0077b6)";
+      btnEl.style.color = "#05060a";
+    } else if (type === "vip") {
+      box.style.border = "2px solid var(--gold)";
+      box.style.boxShadow = "0 0 35px var(--gold-glow)";
+      iconWrap.style.background = "rgba(255, 215, 0, 0.15)";
+      iconWrap.style.color = "var(--gold)";
+      iconWrap.innerHTML = '<i class="fa-solid fa-crown"></i>';
+      btnEl.style.background = "linear-gradient(135deg, var(--gold), #ff8c00)";
+      btnEl.style.color = "#000";
+    }
+
+    modal.style.display = 'flex';
+  }
+
+  function closeLuxAlert() {
+    document.getElementById('luxCustomAlertModal').style.display = 'none';
+  }
+
+  function calculateVipExpiryTime(tier) {
+    const now = new Date();
+    if (tier.includes('7 Hari') || tier.toLowerCase().includes('mingguan')) {
+      return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    } else if (tier.includes('30 Hari') || tier.toLowerCase().includes('bulanan')) {
+      return new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    } else if (tier.includes('365 Hari') || tier.toLowerCase().includes('tahunan')) {
+      return new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000).toISOString();
+    }
+    return null;
+  }
+
+  function formatTimeRemaining(expireIso) {
+    if (!expireIso) return null;
+    const diff = new Date(expireIso).getTime() - new Date().getTime();
+    if (diff <= 0) return "Habis / Expired";
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (days > 0) return `${days} hari ${hours} jam`;
+    if (hours > 0) return `${hours} jam ${mins} mnt`;
+    return `${mins} menit tersisa`;
+  }
+
+  function checkVipExpiryStatus(user) {
+    if (!user || !user.vip) return;
+    if (user.vipExpire) {
+      if (new Date(user.vipExpire).getTime() <= new Date().getTime()) {
+        user.vip = false;
+        let roles = getUserRoles(user).filter(r => r.toUpperCase() !== 'VIP');
+        if (roles.length === 0) roles = ['NEWBIE'];
+        user.roles = roles;
+        user.vipTier = 'NEWBIE';
+        user.vipExpire = null;
+        saveRegisteredUser(user);
+        if (activeUser && activeUser.email.toLowerCase() === user.email.toLowerCase()) {
+          activeUser.vip = false;
+          activeUser.roles = roles;
+          activeUser.vipTier = 'NEWBIE';
+          activeUser.vipExpire = null;
+          updateVipUIState();
+        }
+      }
+    }
+  }
+
+  function getUserOwnedBorders(user) {
+    if (!user) return [];
+    if (isUserPrivileged(user)) return borderPresets.map((_, i) => i);
+    return user.ownedBorders || [];
+  }
+
+  function renderBorderChoices() {
+    const container = document.getElementById('borderChoiceGrid');
+    const isPriv = isUserPrivileged(activeUser);
+    const owned = getUserOwnedBorders(activeUser);
+
+    if (!isPriv && owned.length === 0) {
+      document.getElementById('borderChoiceGridContainer').style.display = 'none';
+      document.getElementById('newbieNoBorderNotice').style.display = 'block';
+      return;
+    }
+
+    document.getElementById('borderChoiceGridContainer').style.display = 'block';
+    document.getElementById('newbieNoBorderNotice').style.display = 'none';
+
+    let listToRender = isPriv ? borderPresets.map((b, i) => ({ b, i })) : owned.map(i => ({ b: borderPresets[i], i }));
+
+    let html = `
+      <div class="border-item-choice ${selectedBorderIndex === null ? 'selected' : ''}" onclick="selectBorderPreset(null)">
+        <div class="border-preview-circle" style="background:#111; border:1px dashed #666;">
+          <i class="fa-solid fa-power-off" style="color:var(--danger); font-size:16px;"></i>
+        </div>
+        <div style="font-size:9px; color:var(--text-dim); margin-top:4px; text-align:center;">Matikan Border (Off)</div>
+      </div>
+    `;
+
+    html += listToRender.map(({ b, i }) => `
+      <div class="border-item-choice ${i === selectedBorderIndex ? 'selected' : ''}" onclick="selectBorderPreset(${i})">
+        <div class="border-preview-circle">
+          <div class="discord-shape-frame" style="${b.style}"></div>
+          ${i + 1}
+        </div>
+        <div style="font-size:9px; color:var(--text-dim); margin-top:4px; text-align:center;">${b.name}</div>
+      </div>
+    `).join('');
+
+    container.innerHTML = html;
+  }
+
+  function renderShopBorderCatalog() {
+    const container = document.getElementById('shopBorderCatalog');
+    const isPriv = isUserPrivileged(activeUser);
+    const owned = getUserOwnedBorders(activeUser);
+
+    container.innerHTML = borderPresets.map((b, index) => {
+      const isBought = isPriv || owned.includes(index);
+      
+      let btnHtml = '';
+      if (isBought) {
+        btnHtml = `<div class="shop-owned-btn"><i class="fa-solid fa-circle-check"></i> Sudah di Beli</div>`;
+      } else {
+        btnHtml = `
+          <button class="shop-buy-btn" onclick="orderShopBorder(${index})">
+            <i class="fa-solid fa-cart-shopping"></i> Beli Border
+          </button>
+        `;
+      }
+
+      return `
+        <div class="shop-border-card">
+          <div style="font-size:12px; font-weight:800; color:#fff;">${b.name}</div>
+          <div class="shop-border-avatar-preview">
+            <i class="fa-solid fa-user-astronaut" style="font-size:24px; color:#fff;"></i>
+            <div class="discord-shape-frame" style="${b.style}"></div>
+          </div>
+          <div style="font-size:12px; font-weight:900; color:var(--gold);">${b.price}</div>
+          ${btnHtml}
+        </div>
+      `;
+    }).join('');
+  }
+
+  function orderShopBorder(index) {
+    const b = borderPresets[index];
+    const storageKey = getStorageKey();
+    const orders = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    const now = new Date();
+
+    orders.unshift({
+      product: `BORDER AVATAR: ${b.name}`,
+      package: `Varian #${index + 1}`,
+      price: b.price,
+      target: activeUser.name + ` (${activeUser.email})`,
+      borderIndex: index,
+      isBorderOrder: true,
+      status: "Menunggu Pembayaran",
+      date: now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})
+    });
+    localStorage.setItem(storageKey, JSON.stringify(orders));
+
+    const wa = localStorage.getItem('piro_wa_number') || '6283161621493';
+    const msg = 
+`*ORDER SHOP BORDER AVATAR* 🛍️
+---------------------------------------
+👤 *Akun Pemesan:* ${activeUser.name} (${activeUser.email})
+🎨 *Nama Border:* ${b.name} (Varian #${index + 1})
+💰 *Harga:* ${b.price}
+💳 *Metode Bayar:* QRIS Resmi
+
+_Halo Admin, saya ingin membeli border ini untuk akun saya._`;
+    window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank');
+    renderUserHistory();
+  }
+
+  function selectBorderPreset(index) {
+    selectedBorderIndex = index;
+    renderBorderChoices();
+    if (index !== null && borderPresets[index]) {
+      document.getElementById('editAvatarShapeFrame').style.cssText = borderPresets[index].style;
+    } else {
+      document.getElementById('editAvatarShapeFrame').style.cssText = '';
+    }
+  }
+
+  function adjustAvatarZoom(scaleVal) {
+    avatarZoomScale = scaleVal;
+    document.getElementById('editAvatarPreviewImg').style.transform = `scale(${scaleVal})`;
+  }
+
+  function openEditProfilePage() {
+    const isPriv = isUserPrivileged(activeUser);
+
+    tempAvatarBase64 = activeUser.avatar;
+    selectedBorderIndex = (activeUser.borderIndex !== undefined) ? activeUser.borderIndex : null;
+    avatarZoomScale = activeUser.avatarZoom || 1;
+
+    document.getElementById('editUsernameInput').value = activeUser.name;
+    document.getElementById('editEmailInput').value = activeUser.email;
+    document.getElementById('editStatusInput').value = activeUser.customStatus || 'Pick a mythical creature as a pet';
+    document.getElementById('editAvatarPreviewImg').src = activeUser.avatar;
+    document.getElementById('editAvatarPreviewImg').style.transform = `scale(${avatarZoomScale})`;
+    document.getElementById('avatarZoomSlider').value = avatarZoomScale;
+
+    if (selectedBorderIndex !== null && borderPresets[selectedBorderIndex]) {
+      document.getElementById('editAvatarShapeFrame').style.cssText = borderPresets[selectedBorderIndex].style;
+    } else {
+      document.getElementById('editAvatarShapeFrame').style.cssText = '';
+    }
+
+    if (!isPriv) {
+      document.getElementById('editUsernameInput').disabled = true;
+      document.getElementById('editEmailInput').disabled = true;
+      document.getElementById('editStatusInput').disabled = true;
+      document.getElementById('btnUploadAvatarLabel').style.opacity = '0.4';
+      document.getElementById('btnUploadAvatarLabel').style.pointerEvents = 'none';
+      document.getElementById('cropAdjustControls').style.display = 'none';
+
+      document.getElementById('lblEditName').innerHTML = 'Nama Pengguna <i class="fa-solid fa-lock" style="color:var(--danger);"></i> (Khusus VIP)';
+      document.getElementById('lblEditEmail').innerHTML = 'Email Pengguna <i class="fa-solid fa-lock" style="color:var(--danger);"></i> (Khusus VIP)';
+      document.getElementById('lblEditStatus').innerHTML = 'Status Custom <i class="fa-solid fa-lock" style="color:var(--danger);"></i> (Khusus VIP)';
+    } else {
+      document.getElementById('editUsernameInput').disabled = false;
+      document.getElementById('editEmailInput').disabled = false;
+      document.getElementById('editStatusInput').disabled = false;
+      document.getElementById('btnUploadAvatarLabel').style.opacity = '1';
+      document.getElementById('btnUploadAvatarLabel').style.pointerEvents = 'auto';
+      document.getElementById('cropAdjustControls').style.display = 'flex';
+
+      document.getElementById('lblEditName').innerHTML = 'Nama Pengguna / Nickname';
+      document.getElementById('lblEditEmail').innerHTML = 'Email Pengguna';
+      document.getElementById('lblEditStatus').innerHTML = 'Status Custom';
+    }
+
+    renderBorderChoices();
+    openSubPage('subpage-edit-profile');
+  }
+
+  function handleAvatarUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      tempAvatarBase64 = evt.target.result;
+      document.getElementById('editAvatarPreviewImg').src = tempAvatarBase64;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function saveUserProfileChanges() {
+    const isPriv = isUserPrivileged(activeUser);
+
+    if (isPriv) {
+      const newName = document.getElementById('editUsernameInput').value.trim();
+      const newEmail = document.getElementById('editEmailInput').value.trim();
+      const newStatus = document.getElementById('editStatusInput').value.trim();
+
+      if (!newName || !newEmail) {
+        showLuxAlert("Data Kosong", "Nama dan Email tidak boleh kosong!", "danger");
+        return;
+      }
+
+      activeUser.name = newName;
+      activeUser.email = newEmail;
+      activeUser.customStatus = newStatus || 'Online';
+      activeUser.avatar = tempAvatarBase64;
+      activeUser.avatarZoom = avatarZoomScale;
+    }
+
+    activeUser.borderIndex = selectedBorderIndex;
+    saveRegisteredUser(activeUser);
+    localStorage.setItem('piro_active_user', JSON.stringify(activeUser));
+
+    updateVipUIState();
+    backToProfile();
+    showLuxAlert("Profil Tersimpan! ✨", "Perubahan profil Anda telah diterapkan secara live ke database!", "success");
+  }
+
+  function showVipInfoModal() {
+    if (!activeUser || !isUserPrivileged(activeUser)) return;
+    const tierEl = document.getElementById('vipCardModalTier');
+    const expEl = document.getElementById('vipCardModalExpire');
+
+    tierEl.innerText = (activeUser.vipTier || 'VIP SELAMANYA').toUpperCase();
+
+    if (activeUser.vipExpire) {
+      const expDate = new Date(activeUser.vipExpire);
+      const remain = formatTimeRemaining(activeUser.vipExpire);
+      expEl.innerHTML = `${expDate.toLocaleDateString('id-ID')} <span style="color:#ff0055; font-size:11px;">(${remain})</span>`;
+    } else {
+      expEl.innerText = "Selamanya (Lifetime)";
+    }
+
+    document.getElementById('vipInfoCardModal').style.display = 'flex';
+  }
+
+  function closeVipInfoModal() {
+    document.getElementById('vipInfoCardModal').style.display = 'none';
+  }
+
+  function getBadgeClassForRole(role) {
+    const r = role.toUpperCase();
+    if (r === 'OWNER') return 'role-owner';
+    if (r === 'VIP') return 'role-vip';
+    if (r === 'CEO') return 'role-ceo';
+    if (r === 'RESELLER') return 'role-reseller';
+    if (r === 'PARTNER') return 'role-partner';
+    if (r === 'PREMIUM') return 'role-premium';
+    return 'role-newbie';
+  }
+
+  function updateVipUIState() {
+    const vipBtn = document.getElementById('topBtnVipInfo');
+    const roles = getUserRoles(activeUser);
+    const isPrivileged = isUserPrivileged(activeUser);
+    const hasBorder = (activeUser && activeUser.borderIndex !== null && activeUser.borderIndex !== undefined && borderPresets[activeUser.borderIndex]);
+    const borderStyle = hasBorder ? borderPresets[activeUser.borderIndex].style : '';
+    const zoomScale = activeUser ? (activeUser.avatarZoom || 1) : 1;
+
+    document.getElementById('profile-name-big').innerText = activeUser ? activeUser.name : 'ZUXCYN';
+    document.getElementById('profile-email-big').innerText = activeUser ? (activeUser.email + ' • ' + (activeUser.name || '')) : '';
+    document.getElementById('profileCustomStatus').innerText = activeUser ? (activeUser.customStatus || 'Pick a mythical creature as a pet') : 'Pick a mythical creature as a pet';
+    document.getElementById('profile-avatar-big').src = activeUser ? activeUser.avatar : '';
+    document.getElementById('profile-avatar-big').style.transform = `scale(${zoomScale})`;
+    document.getElementById('profileAvatarShapeFrame').style.cssText = borderStyle;
+
+    const multiRolePillsContainer = document.getElementById('profileMultiRolePills');
+    multiRolePillsContainer.innerHTML = roles.map(r => `<span class="role-badge-pill ${getBadgeClassForRole(r)}">${r}</span>`).join(' ');
+
+    document.getElementById('roleStatusSubText').innerText = `Role aktif: ${roles.join(', ')}`;
+    document.getElementById('roleCheckTitle').innerText = roles.join(' + ');
+
+    const roleUpgradeBtn = document.getElementById('btnRoleUpgradeVip');
+    if (activeUser && activeUser.vip) {
+      if (roleUpgradeBtn) roleUpgradeBtn.style.display = 'none';
+    } else {
+      if (roleUpgradeBtn) roleUpgradeBtn.style.display = 'block';
+    }
+
+    if (isPrivileged) {
+      vipBtn.style.display = 'flex';
+      document.getElementById('roleAccessEditProfile').innerHTML = '<span style="color:var(--success);">Aktif / Terbuka ✅</span>';
+      document.getElementById('roleAccessDiscount').innerHTML = '<span style="color:var(--success);">Diskon 50% Aktif ✅</span>';
+      document.getElementById('roleAccessMultiList').innerText = roles.join(', ');
+      document.getElementById('roleCheckDesc').innerText = `Akun Anda memiliki hak akses istimewa (${roles.join(', ')}) di sistem Pirostore.`;
+    } else {
+      vipBtn.style.display = 'none';
+      document.getElementById('roleAccessEditProfile').innerHTML = '<span style="color:var(--danger);">Terkunci 🔒 (Perlu VIP)</span>';
+      document.getElementById('roleAccessDiscount').innerHTML = '<span style="color:var(--danger);">Nonaktif ❌</span>';
+      document.getElementById('roleAccessMultiList').innerText = 'NEWBIE';
+      document.getElementById('roleCheckDesc').innerText = 'Anda berstatus NEWBIE. Upgrade ke VIP untuk membuka fitur Edit Profil penuh, Border Avatar gratis, Diskon 50%, dan Bonus 500+ Poin!';
+    }
+  }
+
+  function searchUserProfile() {
+    const query = document.getElementById('userSearchInput').value.trim().toLowerCase();
+    if (!query) {
+      showLuxAlert("Input Kosong", "Masukkan nickname atau email yang ingin dicek!", "danger");
+      return;
+    }
+
+    const users = getRegisteredUsers();
+    const target = users.find(u => (u.name && u.name.toLowerCase().includes(query)) || (u.email && u.email.toLowerCase().includes(query)));
+
+    if (!target) {
+      document.getElementById('userSearchResultCard').style.display = 'none';
+      showLuxAlert("Pengguna Tidak Ditemukan", `Tidak ada akun dengan pencarian "${query}".`, "danger");
+      return;
+    }
+
+    document.getElementById('userSearchResultCard').style.display = 'block';
+    document.getElementById('searchResultName').innerText = target.name || 'Member';
+    document.getElementById('searchResultEmail').innerText = target.email || '';
+    document.getElementById('searchResultStatus').innerText = target.customStatus || 'Online';
+    document.getElementById('searchResultAvatar').src = target.avatar || 'https://ui-avatars.com/api/?name='+encodeURIComponent(target.name)+'&background=00e5ff&color=000';
+    document.getElementById('searchResultAvatar').style.transform = `scale(${target.avatarZoom || 1})`;
+
+    const hasBorder = (target.borderIndex !== null && target.borderIndex !== undefined && borderPresets[target.borderIndex]);
+    document.getElementById('searchResultShapeFrame').style.cssText = hasBorder ? borderPresets[target.borderIndex].style : '';
+
+    const targetRoles = getUserRoles(target);
+    document.getElementById('searchResultRolesList').innerHTML = targetRoles.map(r => `<span class="role-badge-pill ${getBadgeClassForRole(r)}">${r}</span>`).join(' ');
+  }
+
+  function toggleKeyVisibility() {
+    const input = document.getElementById('adminSecretKeyInput');
+    const icon = document.getElementById('eyeKeyIcon');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.className = 'fa-solid fa-eye-slash';
+    } else {
+      input.type = 'password';
+      icon.className = 'fa-solid fa-eye';
+    }
+  }
+
+  function renderAllProducts() {
+    const pContainer = document.getElementById('productsContainer');
+    const plContainer = document.getElementById('priceListContainer');
+    pContainer.innerHTML = '';
+    plContainer.innerHTML = '';
+
+    for (let key in catalogDB) {
+      const p = catalogDB[key];
+      pContainer.innerHTML += `
+        <div class="lux-card">
+          <div class="lux-card-img-wrapper">
+            <img src="${p.img}" class="lux-card-img" />
+          </div>
+          <div class="lux-card-content">
+            <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">${p.name}</h3>
+            <div class="lux-badge-time"><i class="fa-regular fa-clock"></i> ${p.badge}</div>
+            <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 12px;">${p.notes}</p>
+            <button class="lux-order-btn" onclick="openOrderModal('${key}')"><i class="fa-solid fa-cart-shopping"></i> Beli Sekarang</button>
+          </div>
+        </div>
+      `;
+
+      let packagesHtml = p.packages.map((pkg, i) => `
+        <div style="display:flex; justify-content:space-between; ${i < p.packages.length - 1 ? 'border-bottom:1px solid var(--card-border); padding-bottom:4px;' : ''}">
+          <span>${pkg.label}</span><b>${pkg.price}</b>
+        </div>
+      `).join('');
+
+      plContainer.innerHTML += `
+        <div class="glass-box" style="padding: 16px; margin-bottom: 15px;">
+          <h4 style="font-size: 13px; color: var(--secondary); margin-bottom: 10px;">${p.name}</h4>
+          <div style="font-size: 12px; display: flex; flex-direction: column; gap: 8px;">
+            ${packagesHtml}
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function verifyAdminKey() {
+    const key = document.getElementById('adminSecretKeyInput').value.trim();
+    if (key === "KEY_PIRO2526") {
+      isAdminAuthenticated = true;
+      document.getElementById('adminKeyAuthBox').style.display = 'none';
+      document.getElementById('adminDashboardView').style.display = 'block';
+      loadAdminDashboardData();
+      logAdminAction("Admin berhasil membuka panel master.");
+      showLuxAlert("Akses Diterima!", "Selamat datang di Piro Central Controller.", "success");
+    } else {
+      showLuxAlert("Kunci Akses Ditolak!", "Fitur ini khusus developer", "danger");
+    }
+  }
+
+  function lockAdminPanel() {
+    isAdminAuthenticated = false;
+    document.getElementById('adminSecretKeyInput').value = '';
+    document.getElementById('adminKeyAuthBox').style.display = 'block';
+    document.getElementById('adminDashboardView').style.display = 'none';
+  }
+
+  function toggleAdminSection(secId) {
+    const sec = document.getElementById(secId);
+    const isOpen = sec.style.display === 'block';
+    sec.style.display = isOpen ? 'none' : 'block';
+  }
+
+  function loadAdminDashboardData() {
+    const users = getRegisteredUsers();
+    const vipCount = users.filter(u => isUserPrivileged(u)).length;
+    document.getElementById('statTotalUsers').innerText = users.length;
+    document.getElementById('statTotalVip').innerText = vipCount;
+    document.getElementById('statTotalProducts').innerText = Object.keys(catalogDB).length;
+
+    const uList = document.getElementById('adminUserListContainer');
+    if (users.length === 0) {
+      uList.innerHTML = '<p style="font-size:11px; color:var(--text-dim); text-align:center;">Belum ada user yang terdaftar login.</p>';
+    } else {
+      uList.innerHTML = users.map((u) => {
+        let timerDisplay = '';
+        if (u.vip) {
+          if (u.vipExpire) {
+            const timeRem = formatTimeRemaining(u.vipExpire);
+            timerDisplay = `<div style="font-size:10px; color:#00e5ff; font-weight:700; margin-top:3px;"><i class="fa-regular fa-hourglass-half"></i> Sisa: ${timeRem}</div>`;
+          } else {
+            timerDisplay = `<div style="font-size:10px; color:var(--gold); font-weight:700; margin-top:3px;"><i class="fa-solid fa-infinity"></i> Permanen / Lifetime</div>`;
+          }
+        }
+        const hasBorder = (u.borderIndex !== null && u.borderIndex !== undefined && borderPresets[u.borderIndex]);
+        const borderStyle = hasBorder ? borderPresets[u.borderIndex].style : '';
+        const roles = getUserRoles(u);
+
+        return `
+          <div class="user-monitor-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="display:flex; align-items:center;">
+                <div class="user-avatar-top-wrap">
+                  <img src="${u.avatar || 'https://ui-avatars.com/api/?name='+encodeURIComponent(u.name)+'&background=00e5ff&color=000'}" class="user-monitor-avatar" />
+                  <div class="discord-shape-frame" style="${borderStyle}"></div>
+                </div>
+                <div>
+                  <div style="font-weight:800; font-size:13px;">${u.name}</div>
+                  <div style="color:var(--text-dim); font-size:11px;">${u.email}</div>
+                  <div style="color:var(--text-dim); font-size:9px; margin-top:2px;"><i class="fa-regular fa-clock"></i> Login: ${u.lastLogin}</div>
+                  ${timerDisplay}
+                </div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:3px; align-items:flex-end;">
+                ${roles.map(r => `<span class="role-badge-pill ${getBadgeClassForRole(r)}">${r}</span>`).join('')}
+              </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; border-top:1px solid rgba(255,255,255,0.05); padding-top:6px; margin-top:4px;">
+              <button class="btn-user-reset-trash" onclick="adminResetSingleUser('${u.email}')">
+                <i class="fa-solid fa-trash"></i> Reset / Hapus User
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    const pSelect = document.getElementById('adminProductSelect');
+    pSelect.innerHTML = '';
+    for (let key in catalogDB) {
+      pSelect.innerHTML += `<option value="${key}">${catalogDB[key].name}</option>`;
+    }
+    loadProductToEdit();
+  }
+
+  function adminResetSingleUser(email) {
+    if (!confirm(`Yakin ingin mereset & menghapus total data pengguna: ${email}? Semua role, border, dan riwayat belanja akan terhapus bersih!`)) return;
+
+    const cloudKey = sanitizeKey(email);
+    db.ref('users/' + cloudKey).remove();
+
+    let users = getRegisteredUsers();
+    users = users.filter(u => u.email.toLowerCase() !== email.toLowerCase());
+    localStorage.setItem('piro_registered_users', JSON.stringify(users));
+
+    const storageKey = 'pirostore_luxury_db_' + email.toLowerCase();
+    localStorage.removeItem(storageKey);
+
+    if (activeUser && activeUser.email.toLowerCase() === email.toLowerCase()) {
+      showLuxAlert("Pemberitahuan Developer", "Kamu telah di reset developer segera daftar ulang", "danger");
+      setTimeout(() => {
+        logoutApp();
+      }, 2500);
+      return;
+    }
+
+    loadAdminDashboardData();
+    showLuxAlert("User Direset!", `Data pengguna ${email} telah berhasil dihapus total dari cloud database.`, "success");
+    logAdminAction(`Piro mereset/menghapus user ${email}`);
+  }
+
+  function adminActivateVipOrder() {
+    const email = document.getElementById('vipOrderEmail').value.trim();
+    const plan = document.getElementById('vipOrderPlanSelect').value;
+    if (!email) { showLuxAlert("Gagal", "Silakan masukkan email pembeli!", "danger"); return; }
+
+    const expireTime = calculateVipExpiryTime(plan);
+    let users = getRegisteredUsers();
+    let user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (!user) {
+      user = { name: email.split('@')[0], email: email, lastLogin: 'Manual VIP Added', roles: ['VIP'], borderIndex: 0 };
+    }
+
+    user.vip = true;
+    user.vipTier = plan;
+    user.vipExpire = expireTime;
+    let roles = getUserRoles(user);
+    if (!roles.includes('VIP')) roles.push('VIP');
+    roles = roles.filter(r => r !== 'NEWBIE');
+    user.roles = roles;
+    if (user.borderIndex === null || user.borderIndex === undefined) user.borderIndex = 0;
+
+    saveRegisteredUser(user);
+
+    if (activeUser && activeUser.email.toLowerCase() === email.toLowerCase()) {
+      activeUser = { ...activeUser, ...user };
+      localStorage.setItem('piro_active_user', JSON.stringify(activeUser));
+      updateVipUIState();
+      renderShopBorderCatalog();
+      showLuxAlert("✨ VIP Aktif ✨", `Langganan ${plan} berhasil diaktifkan ke akun Anda!`, "vip");
+    } else {
+      showLuxAlert("VIP Berhasil Diaktifkan!", `Paket ${plan} aktif untuk: ${email}`, "success");
+    }
+
+    loadAdminDashboardData();
+    logAdminAction(`Piro mengaktifkan VIP ${plan} untuk ${email}`);
+  }
+
+  function adminRevokeVipOrder() {
+    const email = document.getElementById('vipOrderEmail').value.trim();
+    if (!email) { showLuxAlert("Gagal", "Silakan masukkan email target!", "danger"); return; }
+
+    let users = getRegisteredUsers();
+    let user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (user) {
+      user.vip = false;
+      user.vipTier = 'NEWBIE';
+      user.vipExpire = null;
+      let roles = getUserRoles(user).filter(r => r !== 'VIP');
+      if (roles.length === 0) roles = ['NEWBIE'];
+      user.roles = roles;
+      user.borderIndex = null;
+
+      saveRegisteredUser(user);
+      if (activeUser && activeUser.email.toLowerCase() === email.toLowerCase()) {
+        activeUser = { ...activeUser, ...user };
+        localStorage.setItem('piro_active_user', JSON.stringify(activeUser));
+        updateVipUIState();
+        renderShopBorderCatalog();
+      }
+      showLuxAlert("VIP Dihapus", `Status VIP untuk ${email} telah dicabut.`, "success");
+      loadAdminDashboardData();
+      logAdminAction(`Mencabut VIP pembelian user ${email}`);
+    } else {
+      showLuxAlert("User Tidak Ditemukan", "Email belum terdaftar di database.", "danger");
+    }
+  }
+
+  function adminAddRoleToUser() {
+    const email = document.getElementById('roleTargetEmail').value.trim();
+    const roleToAdd = document.getElementById('roleAddSelect').value;
+    if (!email) { showLuxAlert("Gagal", "Silakan masukkan email target role!", "danger"); return; }
+
+    let users = getRegisteredUsers();
+    let user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (!user) {
+      user = { name: email.split('@')[0], email: email, lastLogin: 'Manual Role Added', roles: [roleToAdd], borderIndex: 0 };
+    } else {
+      let roles = getUserRoles(user);
+      if (!roles.includes(roleToAdd)) {
+        roles.push(roleToAdd);
+      }
+      roles = roles.filter(r => r !== 'NEWBIE');
+      user.roles = roles;
+      if (user.borderIndex === null || user.borderIndex === undefined) user.borderIndex = 0;
+    }
+
+    if (roleToAdd === 'VIP') {
+      user.vip = true;
+      user.vipTier = 'VIP Selamanya (Lifetime)';
+    }
+
+    saveRegisteredUser(user);
+
+    if (activeUser && activeUser.email.toLowerCase() === email.toLowerCase()) {
+      activeUser = { ...activeUser, ...user };
+      localStorage.setItem('piro_active_user', JSON.stringify(activeUser));
+      updateVipUIState();
+      renderShopBorderCatalog();
+      showLuxAlert("✨ Role Ditambahkan ✨", `Role ${roleToAdd} berhasil ditumpuk ke profil Anda!`, "vip");
+    } else {
+      showLuxAlert("Role Ditambahkan!", `Role ${roleToAdd} ditambahkan ke ${email}`, "success");
+    }
+
+    loadAdminDashboardData();
+    logAdminAction(`Piro menumpuk role ${roleToAdd} ke ${email}`);
+  }
+
+  function adminResetRoleToNewbie() {
+    const email = document.getElementById('roleTargetEmail').value.trim();
+    if (!email) { showLuxAlert("Gagal", "Silakan masukkan email target!", "danger"); return; }
+
+    let users = getRegisteredUsers();
+    let user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (user) {
+      user.roles = ['NEWBIE'];
+      user.vip = false;
+      user.vipTier = 'NEWBIE';
+      user.vipExpire = null;
+      user.borderIndex = null;
+
+      saveRegisteredUser(user);
+      if (activeUser && activeUser.email.toLowerCase() === email.toLowerCase()) {
+        activeUser = { ...activeUser, ...user };
+        localStorage.setItem('piro_active_user', JSON.stringify(activeUser));
+        updateVipUIState();
+        renderShopBorderCatalog();
+      }
+      showLuxAlert("Role Direset", `Seluruh role ${email} dikembalikan murni ke NEWBIE.`, "success");
+      loadAdminDashboardData();
+      logAdminAction(`Mereset role ${email} ke NEWBIE`);
+    } else {
+      showLuxAlert("User Tidak Ditemukan", "Email tidak ada di database.", "danger");
+    }
+  }
+
+  function loadUserOrdersForAdmin() {
+    const query = document.getElementById('admOrderSearchUsername').value.trim().toLowerCase();
+    const container = document.getElementById('adminUserOrdersList');
+    if (!query) {
+      container.innerHTML = '<p style="font-size:11px; color:var(--text-dim); text-align:center;">Ketik username atau email terlebih dahulu.</p>';
+      return;
+    }
+
+    const users = getRegisteredUsers();
+    const targetUser = users.find(u => (u.name && u.name.toLowerCase() === query) || (u.email && u.email.toLowerCase() === query));
+
+    if (!targetUser) {
+      container.innerHTML = '<p style="font-size:11px; color:var(--danger); text-align:center; font-weight:700;">Pengguna tidak ditemukan di database.</p>';
+      return;
+    }
+
+    const targetEmail = targetUser.email.toLowerCase();
+    const storageKey = 'pirostore_luxury_db_' + targetEmail;
+    const orders = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+    if (orders.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding:16px; background:rgba(255,255,255,0.03); border-radius:10px; font-size:12px; font-weight:700; color:var(--text-dim);">
+        Tidak ada riwayat pembelian untuk akun <b>${targetUser.name}</b>
+      </div>`;
+      return;
+    }
+
+    container.innerHTML = orders.map((ord, idx) => {
+      const statusText = ord.status || 'Menunggu Pembayaran';
+      let badgeClass = 'status-menunggu';
+      if (statusText === 'Selesai') badgeClass = 'status-selesai';
+      else if (statusText === 'Sedang di proses' || statusText === 'Tunggu Proses') badgeClass = 'status-proses';
+      else if (statusText === 'Ditolak') badgeClass = 'status-ditolak';
+
+      let actionArea = '';
+      if (statusText === 'Selesai') {
+        actionArea = `<div style="margin-top:8px; padding:8px; background:rgba(0, 245, 160, 0.12); color:var(--success); font-size:11px; font-weight:800; border-radius:8px; text-align:center;"><i class="fa-solid fa-circle-check"></i> Produk udah di terima</div>`;
+      } else if (statusText === 'Sedang di proses') {
+        actionArea = `
+          <div style="margin-top:8px; padding:8px; background:rgba(0, 229, 255, 0.12); color:var(--secondary); font-size:11px; font-weight:800; border-radius:8px; text-align:center; margin-bottom:6px;"><i class="fa-solid fa-spinner fa-spin"></i> Sedang di proses</div>
+          <div style="display:flex; gap:6px;">
+            <button style="flex:1; padding:7px; font-size:10px; font-weight:800; border-radius:8px; background:#00f5a0; color:#000; border:none; cursor:pointer;" onclick="adminApproveAndDeliver('${targetEmail}', ${idx})">
+              <i class="fa-solid fa-check"></i> Selesai & Kirim
+            </button>
+            <button style="flex:1; padding:7px; font-size:10px; font-weight:800; border-radius:8px; background:rgba(255,42,95,0.2); color:var(--danger); border:1px solid var(--danger); cursor:pointer;" onclick="adminRejectOrder('${targetEmail}', ${idx})">
+              <i class="fa-solid fa-ban"></i> Tolak
+            </button>
+          </div>
+        `;
+      } else if (statusText === 'Ditolak') {
+        actionArea = `<div style="margin-top:8px; padding:8px; background:rgba(255, 42, 95, 0.12); color:var(--danger); font-size:11px; font-weight:800; border-radius:8px; text-align:center;"><i class="fa-solid fa-circle-xmark"></i> Produk di tolak</div>`;
+      } else {
+        actionArea = `
+          <div style="display:flex; gap:6px; margin-top:10px;">
+            <button style="flex:1; padding:8px; font-size:10px; font-weight:800; border-radius:8px; background:#00f5a0; color:#000; border:none; cursor:pointer;" onclick="adminApproveAndDeliver('${targetEmail}', ${idx})">
+              <i class="fa-solid fa-check-double"></i> Terima
+            </button>
+            <button style="flex:1; padding:8px; font-size:10px; font-weight:800; border-radius:8px; background:linear-gradient(135deg, #00e5ff, #0077b6); color:#000; border:none; cursor:pointer;" onclick="adminProcessOrder('${targetEmail}', ${idx})">
+              <i class="fa-solid fa-arrows-rotate"></i> Proses
+            </button>
+            <button style="flex:1; padding:8px; font-size:10px; font-weight:800; border-radius:8px; background:rgba(255,42,95,0.2); color:var(--danger); border:1px solid var(--danger); cursor:pointer;" onclick="adminRejectOrder('${targetEmail}', ${idx})">
+              <i class="fa-solid fa-ban"></i> Tolak
+            </button>
+          </div>
+        `;
+      }
+
+      return `
+        <div style="background:rgba(255,255,255,0.04); border:1px solid var(--card-border); padding:12px; border-radius:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:800; margin-bottom:4px;">
+            <span>${ord.product}</span>
+            <span class="status-badge-order ${badgeClass}">${statusText}</span>
+          </div>
+          <div style="font-size:11px; color:var(--gold); font-weight:700;">${ord.package} • ${ord.price}</div>
+          <div style="font-size:10px; color:var(--text-dim); margin:4px 0;">Waktu Order: ${ord.date}</div>
+          ${actionArea}
+        </div>
+      `;
+    }).join('');
+  }
+
+  function adminProcessOrder(email, orderIdx) {
+    const storageKey = 'pirostore_luxury_db_' + email;
+    let orders = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    if (!orders[orderIdx]) return;
+
+    orders[orderIdx].status = 'Sedang di proses';
+    localStorage.setItem(storageKey, JSON.stringify(orders));
+
+    loadUserOrdersForAdmin();
+    if (activeUser && activeUser.email.toLowerCase() === email) renderUserHistory();
+    showLuxAlert("Pesanan Diproses", "Status pesanan diubah menjadi: Sedang di proses.", "vip");
+    logAdminAction(`Piro memproses pesanan user ${email}`);
+  }
+
+  function adminApproveAndDeliver(email, orderIdx) {
+    const storageKey = 'pirostore_luxury_db_' + email;
+    let orders = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    if (!orders[orderIdx]) return;
+
+    const ord = orders[orderIdx];
+    ord.status = 'Selesai';
+    localStorage.setItem(storageKey, JSON.stringify(orders));
+
+    let users = getRegisteredUsers();
+    let user = users.find(u => u.email.toLowerCase() === email);
+    if (user && ord.isBorderOrder && ord.borderIndex !== undefined) {
+      user.ownedBorders = user.ownedBorders || [];
+      if (!user.ownedBorders.includes(ord.borderIndex)) {
+        user.ownedBorders.push(ord.borderIndex);
+      }
+      user.borderIndex = ord.borderIndex;
+      saveRegisteredUser(user);
+
+      if (activeUser && activeUser.email.toLowerCase() === email) {
+        activeUser.ownedBorders = user.ownedBorders;
+        activeUser.borderIndex = user.borderIndex;
+        localStorage.setItem('piro_active_user', JSON.stringify(activeUser));
+        updateVipUIState();
+        renderShopBorderCatalog();
+      }
+    }
+
+    loadUserOrdersForAdmin();
+    if (activeUser && activeUser.email.toLowerCase() === email) renderUserHistory();
+    showLuxAlert("Produk Dikirim!", `Pesanan ${ord.product} diterima dan akses telah diberikan ke user!`, "success");
+    logAdminAction(`Piro menerima dan mengirim produk ${ord.product} ke ${email}`);
+  }
+
+  function adminRejectOrder(email, orderIdx) {
+    const storageKey = 'pirostore_luxury_db_' + email;
+    let orders = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    if (!orders[orderIdx]) return;
+
+    orders[orderIdx].status = 'Ditolak';
+    localStorage.setItem(storageKey, JSON.stringify(orders));
+
+    loadUserOrdersForAdmin();
+    if (activeUser && activeUser.email.toLowerCase() === email) renderUserHistory();
+    showLuxAlert("Pesanan Ditolak", "Pesanan ditolak dan produk tidak dikirimkan ke user.", "danger");
+    logAdminAction(`Piro menolak pesanan user ${email}`);
+  }
+
+  function loadProductToEdit() {
+    const key = document.getElementById('adminProductSelect').value;
+    const p = catalogDB[key];
+    if (!p) return;
+    document.getElementById('editProdTitle').value = p.name;
+    document.getElementById('editProdImg').value = p.img;
+    document.getElementById('editProdBadge').value = p.badge;
+    document.getElementById('editProdPackages').value = p.packages.map(pkg => `${pkg.label}=${pkg.price}`).join(', ');
+  }
+
+  function saveProductEdit() {
+    const key = document.getElementById('adminProductSelect').value;
+    const p = catalogDB[key];
+    if (!p) return;
+
+    p.name = document.getElementById('editProdTitle').value.trim();
+    p.img = document.getElementById('editProdImg').value.trim();
+    p.badge = document.getElementById('editProdBadge').value.trim();
+
+    const rawPkg = document.getElementById('editProdPackages').value.split(',');
+    p.packages = rawPkg.map(item => {
+      const parts = item.split('=');
+      return { label: parts[0].trim(), price: parts[1] ? parts[1].trim() : 'Rp 0' };
+    });
+
+    localStorage.setItem('piro_custom_catalog', JSON.stringify(catalogDB));
+    renderAllProducts();
+    showLuxAlert("Produk Diperbarui!", `Data produk ${p.name} berhasil disimpan secara live!`, "success");
+    logAdminAction(`Memperbarui harga dan detail produk ${p.name}`);
+  }
+
+  function logAdminAction(action) {
+    let logs = JSON.parse(localStorage.getItem('piro_admin_logs') || '[]');
+    logs.unshift(`[${new Date().toLocaleTimeString('id-ID')}] ${action}`);
+    if (logs.length > 30) logs.pop();
+    localStorage.setItem('piro_admin_logs', JSON.stringify(logs));
+  }
+
+  function toggleAppTheme() {
+    const isLight = document.getElementById('themeToggle').checked;
+    if (isLight) {
+      document.body.classList.add('light-theme');
+      document.getElementById('theme-status-text').innerText = "Saat ini aktif: Mode Terang";
+      document.getElementById('theme-icon').className = "fa-solid fa-sun setting-icon";
+      localStorage.setItem('piro_theme', 'light');
+    } else {
+      document.body.classList.remove('light-theme');
+      document.getElementById('theme-status-text').innerText = "Saat ini aktif: Mode Gelap";
+      document.getElementById('theme-icon').className = "fa-solid fa-moon setting-icon";
+      localStorage.setItem('piro_theme', 'dark');
+    }
+  }
+
+  function openSubPage(pageId) {
+    document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    if (pageId === 'subpage-border-shop') renderShopBorderCatalog();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function backToProfile() {
+    document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-profile').classList.add('active');
+  }
+
+  function sendFeedbackWA() {
+    const cat = document.getElementById('fbCategory').value;
+    const txt = document.getElementById('fbText').value.trim();
+    if (!txt) { showLuxAlert("Perhatian", "Silakan ketik pesan masukan Anda terlebih dahulu!", "danger"); return; }
+    const wa = localStorage.getItem('piro_wa_number') || '6283161621493';
+    const msg = `*MASUKAN / LAPORAN PIROSTORE*\nKategori: ${cat}\nPengguna: ${activeUser.name} (${activeUser.email})\n\nPesan:\n${txt}`;
+    window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank');
+  }
+
+  function switchPage(pageId, element) {
+    document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab-item').forEach(btn => btn.classList.remove('active'));
+    
+    const searchInput = document.getElementById('userSearchInput');
+    const searchResult = document.getElementById('userSearchResultCard');
+    if (searchInput) searchInput.value = '';
+    if (searchResult) searchResult.style.display = 'none';
+
+    document.getElementById(pageId).classList.add('active');
+    if (element) element.classList.add('active');
+    
+    if (pageId === 'page-history') renderUserHistory();
+    if (pageId === 'page-admin' && isAdminAuthenticated) loadAdminDashboardData();
+  }
+
+  function setAuthMode(mode) {
+    const tabs = document.querySelectorAll('.auth-tab-btn');
+    if(mode === 'login') {
+      tabs[0].classList.add('active');
+      tabs[1].classList.remove('active');
+      document.getElementById('auth-form-login').style.display = 'block';
+      document.getElementById('auth-form-reg').style.display = 'none';
+    } else {
+      tabs[1].classList.add('active');
+      tabs[0].classList.remove('active');
+      document.getElementById('auth-form-login').style.display = 'none';
+      document.getElementById('auth-form-reg').style.display = 'block';
+    }
+  }
+
+  function processLogin(e) {
+    e.preventDefault();
+    const accountInput = document.getElementById('log-account').value.trim();
+    const passInput = document.getElementById('log-password').value;
+
+    if (!accountInput || !passInput) {
+      showLuxAlert("Data Kosong", "Masukkan email dan kata sandi Anda!", "danger");
+      return;
+    }
+
+    let users = getRegisteredUsers();
+    let matchedUser = users.find(u => u.email.toLowerCase() === accountInput.toLowerCase() || (u.phone && u.phone === accountInput));
+
+    if (!matchedUser) {
+      showLuxAlert("Akun Belum Terdaftar!", "Email atau nomor belum terdaftar. Silakan klik menu 'Daftar Akun' terlebih dahulu.", "danger");
+      return;
+    }
+
+    if (matchedUser.password && matchedUser.password !== passInput) {
+      showLuxAlert("Gagal Masuk", "Email atau password salah. Silakan coba lagi.", "danger");
+      return;
+    }
+
+    loginSuccess(matchedUser);
+  }
+
+  function processRegister(e) {
+    e.preventDefault();
+    const name = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-account').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    const password = document.getElementById('reg-password').value;
+
+    if (!name || !email || !phone || !password) {
+      showLuxAlert("Form Belum Lengkap", "Silakan lengkapi semua kolom pendaftaran!", "danger");
+      return;
+    }
+
+    let users = getRegisteredUsers();
+    
+    let existEmail = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (existEmail) {
+      showLuxAlert("Email Sudah Ada", "Email ini telah terdaftar! Silakan langsung masuk di menu Masuk.", "danger");
+      return;
+    }
+
+    let existPhone = users.find(u => u.phone === phone);
+    if (existPhone) {
+      showLuxAlert("Nomor WhatsApp Terdaftar", "Nomor WhatsApp ini sudah digunakan oleh akun lain! Silakan gunakan nomor berbeda.", "danger");
+      return;
+    }
+
+    const newUser = {
+      name: name || email.split('@')[0],
+      email: email,
+      phone: phone,
+      password: password,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name || email)}&background=ff0055&color=fff`,
+      roles: ['NEWBIE'],
+      vip: false,
+      vipTier: 'NEWBIE',
+      vipExpire: null,
+      borderIndex: null,
+      ownedBorders: [],
+      customStatus: 'Pick a mythical creature as a pet'
+    };
+
+    saveRegisteredUser(newUser);
+
+    document.getElementById('auth-form-reg').reset();
+    setAuthMode('login');
+    document.getElementById('log-account').value = email;
+    showLuxAlert("Pendaftaran Berhasil! 🎉", "Akun Anda berhasil dibuat. Silakan masukkan kata sandi untuk login.", "success");
+  }
+
+  function loginSuccess(user) {
+    checkVipExpiryStatus(user);
+    
+    let users = getRegisteredUsers();
+    let cloudMatched = users.find(u => u.email.toLowerCase() === user.email.toLowerCase());
+    if (cloudMatched) {
+      activeUser = cloudMatched;
+    } else {
+      activeUser = user;
+    }
+
+    localStorage.setItem('piro_active_user', JSON.stringify(activeUser));
+
+    updateVipUIState();
+
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'flex';
+
+    const homeTabBtn = document.querySelectorAll('.bottom-navbar .nav-tab-item')[0];
+    switchPage('page-home', homeTabBtn);
+
+    renderAllProducts();
+    renderShopBorderCatalog();
+
+    const savedTheme = localStorage.getItem('piro_theme');
+    if (savedTheme === 'light') {
+      document.getElementById('themeToggle').checked = true;
+      toggleAppTheme();
+    }
+  }
+
+  function logoutApp() {
+    activeUser = null;
+    localStorage.removeItem('piro_active_user');
+    document.getElementById('main-app').style.display = 'none';
+    document.getElementById('auth-screen').style.display = 'flex';
+  }
+
+  function getStorageKey() {
+    return 'pirostore_luxury_db_' + (activeUser ? activeUser.email.toLowerCase() : 'guest');
+  }
+
+  function renderUserHistory() {
+    const container = document.getElementById('userHistoryContainer');
+    const orders = JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
+
+    if(orders.length === 0) {
+      container.innerHTML = '<div class="glass-box" style="padding:20px; text-align:center; font-size:12px; color:var(--text-dim);">Belum ada riwayat transaksi di akun ini.</div>';
+      return;
+    }
+
+    container.innerHTML = orders.map(ord => {
+      const statusText = ord.status || 'Menunggu Pembayaran';
+      let statusBadgeClass = 'status-menunggu';
+      if (statusText === 'Selesai') statusBadgeClass = 'status-selesai';
+      else if (statusText === 'Sedang di proses' || statusText === 'Tunggu Proses') statusBadgeClass = 'status-proses';
+      else if (statusText === 'Ditolak') statusBadgeClass = 'status-ditolak';
+
+      return `
+        <div class="glass-box" style="padding: 14px; border-left: 4px solid var(--secondary);">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; font-size:13px; margin-bottom:6px;">
+            <span>${ord.product}</span>
+            <span class="status-badge-order ${statusBadgeClass}">${statusText}</span>
+          </div>
+          <div style="font-size:11px; color:var(--text-white); margin-bottom:2px;">Paket: <b>${ord.package}</b> (${ord.price})</div>
+          <div style="font-size:11px; color:var(--text-dim);">Target: ${ord.target}</div>
+          <div style="font-size:10px; color:var(--gold); margin-top:6px;"><i class="fa-regular fa-clock"></i> ${ord.date}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function openOrderModal(key) {
+    isVipOrder = false;
+    selectedCategory = key;
+    const itemData = catalogDB[key];
+    document.getElementById('modalTitle').innerText = itemData.name;
+    document.getElementById('packageSelectField').style.display = 'block';
+
+    const select = document.getElementById('modalPackageSelect');
+    select.innerHTML = '';
+    itemData.packages.forEach((pkg, index) => {
+      const opt = document.createElement('option');
+      opt.value = index;
+      opt.innerText = `${pkg.label} — ${pkg.price}`;
+      select.appendChild(opt);
+    });
+
+    if (itemData.type === 'MLBB') {
+      document.getElementById('mlbbInputGroup').style.display = 'block';
+      document.getElementById('generalInputGroup').style.display = 'none';
+      document.getElementById('mlUserId').value = '';
+      document.getElementById('mlZoneId').value = '';
+    } else {
+      document.getElementById('mlbbInputGroup').style.display = 'none';
+      document.getElementById('generalInputGroup').style.display = 'block';
+      document.getElementById('generalInputLabel').innerText = "Masukkan Target / Email Fresh / Link VT:";
+      document.getElementById('generalInput').value = '';
+    }
+
+    document.getElementById('checkoutModal').style.display = 'flex';
+  }
+
+  function orderVipPlan(planName, price) {
+    isVipOrder = true;
+    currentVipPlan = { name: planName, price: price };
+
+    document.getElementById('modalTitle').innerText = `Upgrade ${planName}`;
+    document.getElementById('packageSelectField').style.display = 'none';
+    document.getElementById('mlbbInputGroup').style.display = 'none';
+    document.getElementById('generalInputGroup').style.display = 'block';
+    document.getElementById('generalInputLabel').innerText = "Masukkan Nomor WhatsApp / Email Anda:";
+    document.getElementById('generalInput').value = activeUser ? activeUser.email : '';
+
+    document.getElementById('checkoutModal').style.display = 'flex';
+  }
+
+  function closeOrderModal() {
+    document.getElementById('checkoutModal').style.display = 'none';
+  }
+
+  function confirmOrderWhatsApp() {
+    let targetDetail = "";
+    let productName = "";
+    let packageName = "";
+    let finalPrice = "";
+
+    if (isVipOrder) {
+      const contactVal = document.getElementById('generalInput').value.trim();
+      if (!contactVal) {
+        showLuxAlert("Data Kosong", "Masukkan data kontak / email Anda!", "danger");
+        return;
+      }
+      productName = "UPGRADE MEMBERSHIP VIP";
+      packageName = currentVipPlan.name;
+      finalPrice = currentVipPlan.price;
+      targetDetail = contactVal;
+    } else {
+      const data = catalogDB[selectedCategory];
+      const select = document.getElementById('modalPackageSelect');
+      const chosenPkg = data.packages[select.value];
+      productName = data.name;
+      packageName = chosenPkg.label;
+      finalPrice = chosenPkg.price;
+
+      if (data.type === 'MLBB') {
+        const userId = document.getElementById('mlUserId').value.trim();
+        const zoneId = document.getElementById('mlZoneId').value.trim();
+        if (!userId || !zoneId) {
+          showLuxAlert("Data Belum Lengkap", "Harap masukkan User ID dan Zone ID Mobile Legends secara lengkap!", "danger");
+          return;
+        }
+        targetDetail = `User ID: ${userId} | Zone ID: (${zoneId})`;
+      } else {
+        const generalVal = document.getElementById('generalInput').value.trim();
+        if (!generalVal) {
+          showLuxAlert("Data Kosong", "Harap lengkapi data target / email / link pesanan!", "danger");
+          return;
+        }
+        targetDetail = generalVal;
+      }
+    }
+
+    const orders = JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
+    const now = new Date();
+    orders.unshift({
+      product: productName,
+      package: packageName,
+      price: finalPrice,
+      target: targetDetail,
+      status: "Menunggu Pembayaran",
+      date: now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})
+    });
+    localStorage.setItem(getStorageKey(), JSON.stringify(orders));
+
+    const wa = localStorage.getItem('piro_wa_number') || '6283161621493';
+    const msg = 
+`*KONFIRMASI PESANAN PIROSTORE* 🛒
+---------------------------------------
+👤 *Akun Pemesan:* ${activeUser.name} (${activeUser.email})
+💎 *Produk:* ${productName}
+📦 *Paket:* ${packageName}
+💰 *Harga:* ${finalPrice}
+🎯 *Target / Data Akun:* ${targetDetail}
+💳 *Metode Bayar:* QRIS
+
+_Bukti pembayaran QRIS sudah saya lampirkan di bawah. Tolong segera diverifikasi dan diproses ya min, terima kasih!_`;
+
+    const waLink = `https://wa.me/${wa}?text=${encodeURIComponent(msg)}`;
+    window.open(waLink, '_blank');
+    closeOrderModal();
+    renderUserHistory();
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    setupGoogleNativeService();
+
+    const savedTheme = localStorage.getItem('piro_theme');
+    if (savedTheme === 'light') {
+      const toggle = document.getElementById('themeToggle');
+      if (toggle) toggle.checked = true;
+      toggleAppTheme();
+    }
+
+    const savedActiveUser = localStorage.getItem('piro_active_user');
+    if (savedActiveUser) {
+      try {
+        const parsedUser = JSON.parse(savedActiveUser);
+        let users = getRegisteredUsers();
+        let freshUser = users.find(u => u.email.toLowerCase() === parsedUser.email.toLowerCase()) || parsedUser;
+        loginSuccess(freshUser);
+      } catch (err) {
+        localStorage.removeItem('piro_active_user');
+      }
+    }
+  });
+
+  window.onclick = function(e) {
+    const modal = document.getElementById('checkoutModal');
+    const vipModal = document.getElementById('vipInfoCardModal');
+    if (e.target === modal) closeOrderModal();
+    if (e.target === vipModal) closeVipInfoModal();
+  };
+</script>
+
+</body>
+</html>
