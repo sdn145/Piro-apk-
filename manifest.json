@@ -8,13 +8,13 @@
   "description": "Layanan Digital Pirostore Official",
   "icons": [
     {
-      "src": "https://ui-avatars.com/api/?name=Piro+Store&background=00e5ff&color=000&size=192&format=png",
+      "src": "https://cdn.phototourl.com/member/2026-08-27-5b41a41c-b768-49cc-931b-92a2f9b3bc9b.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://ui-avatars.com/api/?name=Piro+Store&background=00e5ff&color=000&size=512&format=png",
+      "src": "https://cdn.phototourl.com/member/2026-08-27-5b41a41c-b768-49cc-931b-92a2f9b3bc9b.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
