@@ -1,0 +1,17 @@
+{
+  "name": "Pirostore Official",
+  "short_name": "Pirostore",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06070c",
+  "theme_color": "#06070c",
+  "description": "Layanan Digital Pirostore Official",
+  "icons": [
+    {
+      "src": "https://cdn.phototourl.com/member/2026-08-27-5b41a41c-b768-49cc-931b-92a2f9b3bc9b.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
